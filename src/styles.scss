@@ -1,1 +1,48 @@
-/* You can add global styles to this file, and also import other style files */
+/* --- 1. استيراد الخطوط --- */
+@font-face {
+  font-family: 'UthmanicHafs';
+  src: url('/assets/fonts/KFGQPCUthmanicScriptHAFSRegular.otf') format('otf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600&display=swap');
+
+/* --- 2. متغيرات الثيم --- */
+:root {
+  --font-arabic: 'UthmanicHafs', serif;
+  --font-latin: 'Readex Pro', sans-serif;
+  --transition-speed: 0.3s ease;
+
+  // Light Theme
+  --bg-primary: #f7f7f7;
+  --bg-secondary: #ffffff;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #e0e0e0;
+  --accent-color: #007bff;
+  --accent-hover: #0056b3;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border-color: #333333;
+  --accent-color: #269fff;
+  --accent-hover: #52b7ff;
+}
+
+/* --- 3. التنسيق الأساسي --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-latin);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}

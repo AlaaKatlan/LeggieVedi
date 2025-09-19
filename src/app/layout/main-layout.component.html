@@ -1,0 +1,17 @@
+<div class="main-container" [class.sidebar-open]="isSidebarOpen()">
+
+  <aside class="sidebar">
+    <app-surah-list />
+  </aside>
+
+  <main class="content">
+    <button class="menu-toggle" (click)="isSidebarOpen.set(true)">
+      ☰
+    </button>
+    <router-outlet />
+  </main>
+
+  @if (isSidebarOpen()) {
+    <div class="sidebar-backdrop" (click)="isSidebarOpen.set(false)"></div>
+  }
+</div>

@@ -1,0 +1,275 @@
+// الكود الكامل والصحيح لملف SCSS
+.reader-header {
+  text-align: center;
+  padding: 40px 20px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.surah-title-ar {
+  font-family: var(--font-arabic);
+  font-size: 3rem;
+  font-weight: normal;
+  margin: 0;
+  color: var(--accent-color);
+}
+
+.surah-title-en {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 5px 0 15px 0;
+  color: var(--text-secondary);
+}
+
+.surah-details {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+
+  .separator {
+    color: var(--accent-color);
+  }
+}
+
+.other-names {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.name-chip {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  background-color: var(--bg-primary);
+
+  .phonetic {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .meaning {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+}
+
+.reader-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ayah-card {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  margin-bottom: 25px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.ayah-header {
+  margin-bottom: 20px;
+}
+
+.ayah-number {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+  padding: 5px 10px;
+}
+
+.ayah-content {
+  // no direct styles needed for this wrapper
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInUp {
+  from { transform: translate(-50%, -40%); opacity: 0; }
+  to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+.arabic-text {
+  font-family: var(--font-arabic);
+  font-size: 2.2rem;
+  text-align: right;
+  direction: rtl;
+  line-height: 2.2;
+  margin: 0 0 25px 0;
+  padding-bottom: 25px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.primary-tafsir {
+  font-family: var(--font-reading);
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: var(--text-primary);
+}
+
+.extra-tafsirs {
+  margin-top: 20px;
+  border-top: 1px dashed var(--border-color);
+  padding-top: 20px;
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent-color);
+    font-family: var(--font-ui);
+  }
+  .extra-tafsir-item {
+    padding: 15px;
+    margin-top: 10px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    p, strong { margin: 0; font-family: var(--font-reading); }
+    strong { font-family: var(--font-ui); font-size: 0.9rem; margin-bottom: 5px; display: block; }
+  }
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.footnote-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.8em;
+  vertical-align: super;
+  margin: 0 2px;
+  color: var(--accent-color);
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--accent-color);
+    color: white;
+  }
+}
+
+.header-footnote {
+  margin-left: 5px;
+}
+
+.footnote-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+.footnote-popover {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  overflow: hidden;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.popover-content {
+  padding: 20px 25px;
+  max-height: 60vh;
+  overflow-y: auto;
+  line-height: 1.8;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.ayah-search-container {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .search-input {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: var(--font-ui);
+    transition: all var(--transition-speed);
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+    }
+  }
+}

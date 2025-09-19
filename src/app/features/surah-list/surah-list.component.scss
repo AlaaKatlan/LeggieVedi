@@ -1,0 +1,206 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.list-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-secondary);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    flex-grow: 1;
+  }
+
+  input {
+    width: 150px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: all var(--transition-speed);
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.2);
+    }
+  }
+
+  .theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: var(--border-color);
+    }
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.surah-nav {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.surah-link {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+  transition: background-color var(--transition-speed);
+
+  &:hover {
+    background-color: var(--bg-primary);
+  }
+
+  &.active {
+    background-color: var(--accent-color);
+    color: white;
+
+    .name-ar, .name-en, .surah-meta-info {
+      color: white;
+    }
+    .surah-number {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    .surah-meta-info {
+        border-top-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.surah-main-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 15px;
+}
+
+.surah-number {
+  background-color: var(--bg-primary);
+  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--accent-color);
+  flex-shrink: 0;
+  transition: all var(--transition-speed);
+}
+
+.surah-names {
+  display: flex;
+  flex-direction: column;
+}
+
+.name-ar {
+  font-family: var(--font-arabic);
+  font-size: 1.3rem;
+  font-weight: normal;
+}
+
+.name-en {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: color var(--transition-speed);
+}
+
+.surah-meta-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  transition: all var(--transition-speed);
+}
+
+.name-en-translation {
+  font-weight: 300;
+}
+
+.details {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+}
+.surah-link {
+  // تعديل بسيط على التصميم ليكون flex-column
+  flex-direction: column;
+  align-items: stretch; // لتتمدد العناصر على كامل العرض
+  padding: 15px;
+}
+
+.surah-main-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+// --- تنسيقات القسم الجديد ---
+.surah-meta-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.name-en-translation {
+  font-weight: 300;
+}
+
+.details {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+}
+
+// لجعل البطاقة النشطة تبدو أفضل
+.surah-link.active .surah-meta-info {
+  border-top-color: rgba(255, 255, 255, 0.2);
+}

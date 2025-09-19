@@ -1,0 +1,26 @@
+<nav class="surah-nav">
+  @for (surah of filteredSurahs(); track surah.id) {
+    <a class="surah-link"
+       [routerLink]="['/surah', surah.id]"
+       routerLinkActive="active">
+
+      <div class="surah-main-info">
+        <span class="surah-number">{{ surah.order_number }}</span>
+        <div class="surah-names">
+          <span class="name-ar">{{ surah.name_ar }}</span>
+          <span class="name-en">{{ surah.name_en }}</span>
+        </div>
+      </div>
+
+      <div class="surah-meta-info">
+        <span class="name-en-translation">{{ surah.name_en_translation }}</span>
+        <div class="details">
+          <span>{{ surah.revelation_place }}</span>
+          <span class="separator">•</span>
+          <span>{{ surah.ayah_count }} Verses</span>
+        </div>
+      </div>
+
+    </a>
+  }
+</nav>
