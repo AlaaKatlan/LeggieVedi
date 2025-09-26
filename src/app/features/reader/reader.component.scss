@@ -273,3 +273,10 @@
     }
   }
 }
+.interpreter-name {
+  font-weight: bold;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  font-family: var(--font-ui);
+  margin-bottom: 8px;
+}

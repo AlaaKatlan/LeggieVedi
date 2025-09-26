@@ -1,4 +1,4 @@
-@if (surahInfo(); as surah) {
+<!-- @if (surahInfo(); as surah) {
   <div class="reader-header">
     <h1 class="surah-title-ar">{{ surah.name_ar }}</h1>
     <h2 class="surah-title-en">{{ surah.name_en_translation }}</h2>
@@ -75,6 +75,99 @@
       </div>
     }
     </div>
+} @else {
+  <div class="loader">
+    @if(ayahs().length > 0 && filteredAyahs().length === 0) {
+      <span>لا توجد نتائج مطابقة لبحثك.</span>
+    } @else {
+      <span>جاري تحميل السورة...</span>
+    }
+  </div>
+}
+
+@if (activeFootnoteText(); as noteText) {
+  <div class="footnote-backdrop" (click)="closeFootnote()"></div>
+  <div class="footnote-popover" (click)="$event.stopPropagation()">
+    <div class="popover-header">
+      <h3>شرح وتوضيح</h3>
+      <button class="close-btn" (click)="closeFootnote()">&times;</button>
+    </div>
+    <div class="popover-content">
+      <p>{{ noteText }}</p>
+    </div>
+  </div>
+} -->
+@if (surahInfo(); as surah) {
+  <div class="reader-header">
+    <h1 class="surah-title-ar">{{ surah.name_ar }}</h1>
+    <h2 class="surah-title-en">{{ surah.name_en_translation }}</h2>
+    <div class="surah-details">
+      <span>{{ surah.revelation_place }}</span>
+      <span class="separator">•</span>
+      <span>{{ surah.ayah_count }} Verses</span>
+    </div>
+
+    <div class="ayah-search-container">
+      <input
+        type="search"
+        placeholder="ابحث في نص الآيات والتفسير..."
+        class="search-input"
+        [value]="ayahSearchTerm()"
+        (input)="onAyahSearch($event)"
+      />
+    </div>
+    </div>
+}
+
+@if (filteredAyahs().length > 0) {
+  <div class="reader-container">
+    @for (ayah of filteredAyahs(); track ayah.ayah_id) {
+      <div class="ayah-card">
+        <div class="ayah-header">
+          <span class="ayah-number">{{ surahInfo()?.order_number }}:{{ ayah.verse_number }}</span>
+        </div>
+
+        <div class="ayah-content">
+          <p class="arabic-text">{{ ayah.text_uthmani }}</p>
+
+          @if (ayah.primary_tafsir; as tafsir) {
+            <div class="primary-tafsir">
+              <p class="interpreter-name">{{ tafsir.interpreter?.display_name_it }}</p>
+              <p>
+                @for (segment of processTextWithFootnotes(tafsir.text, getFootnotesForTafsir(ayah, 'main', tafsir.id)); track $index) {
+                  @if (isFootnote(segment)) {
+                    <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">[{{ segment.pos }}]</button>
+                  } @else {
+                    <span>{{ segment }}</span>
+                  }
+                }
+              </p>
+            </div>
+          }
+
+          @if (ayah.extra_tafsirs.length > 0) {
+            <details class="extra-tafsirs">
+              <summary>Traduzioni alternative</summary>
+              @for (extra of ayah.extra_tafsirs; track extra.id) {
+                <div class="extra-tafsir-item">
+                  <strong>{{ extra.interpreter?.display_name_it }}</strong>
+                  <p>
+                    @for (segment of processTextWithFootnotes(extra.text, getFootnotesForTafsir(ayah, 'extra', extra.id)); track $index) {
+                      @if (isFootnote(segment)) {
+                        <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">[{{ segment.pos }}]</button>
+                      } @else {
+                        <span>{{ segment }}</span>
+                      }
+                    }
+                  </p>
+                </div>
+              }
+            </details>
+          }
+        </div>
+      </div>
+    }
+  </div>
 } @else {
   <div class="loader">
     @if(ayahs().length > 0 && filteredAyahs().length === 0) {
