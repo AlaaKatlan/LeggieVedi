@@ -1,60 +1,113 @@
 :host {
-  display: block; // يضمن أن المكون يأخذ مساحة في الصفحة
+  display: block;
 }
 
 .article-card {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
+  background: linear-gradient(145deg, #ffffff, #f8f9fb);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
   text-decoration: none;
   color: inherit;
-  height: 100%; // يجعل كل البطاقات في نفس الصف بنفس الارتفاع
+  height: 100%;
+  position: relative;
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+
+    .overlay {
+      opacity: 0.3;
+    }
+
+    .article-title {
+      color: #4f46e5; // لون مميز عند الهوفر
+    }
   }
 }
 
-.card-image-container {
+/* ===== الصورة ===== */
+.article-image-wrapper {
+  position: relative;
   width: 100%;
-  // يحافظ على نسبة العرض إلى الارتفاع (16:9)
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16/9;
   overflow: hidden;
+  border-bottom: 1px solid #eee;
 }
 
-.card-image {
+.article-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; // يضمن أن الصورة تملأ المساحة بشكل جميل
-  transition: transform 0.4s ease;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  display: block;
+
+  &:hover {
+    transform: scale(1.08);
+  }
 }
 
-.article-card:hover .card-image {
-  transform: scale(1.05); // تأثير تكبير بسيط على الصورة عند المرور
+/* تأثير شفاف فوق الصورة */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
-.card-content {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; // يسمح لهذا الجزء بالتمدد ليملأ المساحة المتبقية
+/* ===== المحتوى ===== */
+.article-content {
+  padding: 1.25rem;
+  text-align: center;
+  background: white;
 }
 
-.card-title {
+.article-title {
   font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
-  font-family: var(--font-reading);
+  font-weight: 700;
+  color: #333;
+  transition: color 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
-.card-date {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0;
-  margin-top: auto; // يدفع التاريخ لأسفل البطاقة
+/* ===== عند غياب الصورة ===== */
+.article-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.placeholder-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  line-height: 1.4;
+  padding: 0 1rem;
+}
+
+/* ===== ألوان ديناميكية للبطاقات ===== */
+$placeholder-colors:
+  #1abc9c,
+  #3498db,
+  #9b59b6,
+  #e67e22,
+  #e74c3c;
+
+@for $i from 1 through length($placeholder-colors) {
+  :host-context(.grid app-article-card:nth-of-type(#{length($placeholder-colors)}n + #{$i})) {
+    .article-image-placeholder {
+      background: nth($placeholder-colors, $i);
+    }
+  }
 }

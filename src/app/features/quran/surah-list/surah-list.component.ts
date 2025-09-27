@@ -18,6 +18,7 @@ export class SurahListComponent implements OnInit {
 
   allSurahs = signal<Surah[]>([]);
   searchTerm = signal<string>('');
+filterType = signal<'surah' | 'ayah'>('surah');
 
   filteredSurahs = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();

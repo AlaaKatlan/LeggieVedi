@@ -204,15 +204,30 @@
 .surah-link.active .surah-meta-info {
   border-top-color: rgba(255, 255, 255, 0.2);
 }
-.sidebar {
-  background: #fefcf5;
-}
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
 
-.sidebar::-webkit-scrollbar {
-  width: 8px;
-}
+  label {
+    font-weight: bold;
+    color: var(--text-primary);
+  }
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
+  select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: all var(--transition-speed);
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.2);
+    }
+  }
 }

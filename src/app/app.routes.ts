@@ -20,15 +20,22 @@ export const routes: Routes = [
         title: 'Art Gallery',
         loadComponent: () => import('./features/gallery/gallery.component').then(c => c.GalleryComponent),
       },
+
+      // --- ترتيب مسارات المدونة الصحيح ---
       {
-        path: 'blog/:slug',
+        path: 'blog', // <-- المسار المحدد يأتي أولاً
+        title: 'My Articles',
+        loadComponent: () => import('./features/blog/blog.component').then(c => c.BlogComponent),
+      },
+      {
+        path: 'blog/:slug', // <-- المسار الذي يحتوي على متغير يأتي ثانياً
         loadComponent: () => import('./features/blog/article-detail/article-detail.component').then(c => c.ArticleDetailComponent),
       },
-      // --- NEW ROUTE FOR ARTWORK DETAIL ---
+      // ------------------------------------
+
       {
         path: 'artwork/:id',
         title: 'Artwork Details',
-        // You can create this component later
         loadComponent: () => import('./features/gallery/artwork-detail/artwork-detail.component').then(c => c.ArtworkDetailComponent),
       }
     ]

@@ -1,26 +1,112 @@
-Nabil Al-Muhaini
-Artist, Writer, and Spiritual Thinker
+<section class="hero-section">
+  <div class="hero-container">
+    <div class="hero-layout">
 
-Latest Articles
-@for (article of latestArticles(); track article.id) { } @empty {
-No articles found.
+      <div class="hero-text">
+        <h1 class="hero-title">
+          نبيل رضا المهايني
+        </h1>
+        <p class="hero-subtitle">
+          فنان، مخرج، مترجم وكاتب من دمشق
+        </p>
+        <a href="#about" class="hero-button">
+          اكتشف المسيرة
+        </a>
+      </div>
 
-}
-Art Gallery
-@for (art of artworks(); track art.id) {
+      <div class="hero-image">
+<img src="assets/image/nabil.jpg" alt="صورة نبيل رضا المهايني">
 
-{{ art.title }}
-} @empty {
-No artwork to display.
+        <div class="social-icons">
+          <a href="#!" title="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+          <a href="#!" title="إنستغرام"><i class="fab fa-instagram"></i></a>
+          <a href="#!" title="بريد إلكتروني"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
 
-}
-Milestones
-@for (item of achievements(); track item.id) {
-{{ item.title }}
-{{ item.achievement_date | date: 'longDate' }}
-{{ item.description }}
+    </div>
+  </div>
+</section>
 
-} @empty {
-No achievements listed yet.
+<div class="container">
 
-}
+  <section id="about" class="home-section about-section">
+    <div class="about-content">
+      <h2 class="section-title">نبذة</h2>
+      <p>
+        من مواليد دمشق 1944. أقمت في ايطاليا للدراسة ثم العمل بين عامي 1963 و 1986. تخرجت من أكاديمية الفنون الجميلة في فلورنسا، ثم تخصصت في الإخراج التلفزيوني والسينمائي في روما. مسيرتي المهنية شملت التلفزيون والسينما والصحافة والترجمة الأدبية، مما أتاح لي نشر قرابة الأربعين كتاباً، معظمها مترجم عن الإيطالية.
+      </p>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <h2 class="section-title">أحدث المقالات</h2>
+<div class="grid" [ngClass]="{'single-article': latestArticles().length === 1}">
+  @for (article of latestArticles(); track article.id) {
+    <app-article-card [article]="article" />
+  } @empty {
+    <p class="empty-message">لم يتم نشر أي مقالات بعد.</p>
+  }
+</div>
+    <div class="section-link">
+      <a routerLink="/blog">عرض كل المقالات ←</a>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <h2 class="section-title">أعمال فنية مختارة</h2>
+    <div class="gallery-grid">
+      @for (art of featuredArtworks(); track art.id) {
+        <a class="art-item" [routerLink]="['/artwork', art.id]">
+          <img alt="" [src]="art.image_url" [alt]="art.title" loading="lazy">
+          <div class="art-overlay">
+            <h3>{{ art.title }}</h3>
+          </div>
+        </a>
+      } @empty {
+        <p class="empty-message">لا توجد أعمال فنية لعرضها حاليًا.</p>
+      }
+    </div>
+    <div class="section-link">
+      <a routerLink="/gallery">تصفح المعرض الكامل ←</a>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <h2 class="section-title">محطات في المسيرة المهنية</h2>
+    <div class="timeline">
+       <div class="timeline-item">
+        <div class="timeline-icon"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">1983 - الآن</span>
+          <h3 class="timeline-title">خبير في الصندوق الدولي للتنمية الزراعية (IFAD)</h3>
+          <p class="timeline-description">في روما ثم دمشق، متخصص في الإعلام، الاتصالات، والإشراف على المشاريع، والترجمة.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-icon"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">مخرج ومستشار</span>
+          <h3 class="timeline-title">إخراج أفلام وإدارة منظمات</h3>
+          <p class="timeline-description">أخرجت أكثر من 150 فيلماً للتلفزيون السوري وعملت مديراً لمنظمة The Worldview International.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-icon"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">تجارب سينمائية وصحفية</span>
+          <h3 class="timeline-title">مساعد للمخرج بازوليني وصحفي في روما</h3>
+          <p class="timeline-description">عملت كمساعد للمخرج الكبير بيير باولو بازوليني، ومراسل لعدة مجلات عربية من روما.</p>
+        </div>
+      </div>
+       <div class="timeline-item">
+        <div class="timeline-icon"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">1971 - 1967</span>
+          <h3 class="timeline-title">التحصيل العلمي في إيطاليا</h3>
+          <p class="timeline-description">تخرجت من أكاديمية الفنون الجميلة في فلورنسا (ديكور مسرح) ثم من جامعة الدراسات الاجتماعية في روما (إخراج).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

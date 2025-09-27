@@ -143,3 +143,461 @@
     }
   }
 }
+.hero-section {
+ background:
+    // --- الطبقة الجديدة: الباترن الإسلامي (شفاف) ---
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='rgba(255, 255, 255, 0.08)' fill-opacity='0.4'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c-5.523 0-10-4.477-10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c-5.523 0-10-4.477-10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+
+    // --- طبقات الألوان الأصلية الخاصة بك ---
+    radial-gradient(at 12% 100%, #ffe2b024 1%, #ffe2b012 5px, #0000 15%),
+    radial-gradient(circle at 95% -15%, #8d5b9566 5%, #0000 30%),
+    radial-gradient(circle at 12% 100%, #84abd5f5 1%, #ffe2b02f 5px, #0000 15%),
+    radial-gradient(circle at 100%, #c4f5e963 1%, #0000 35%);
+
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 150px, cover, cover, cover, cover;
+  background-attachment: fixed;
+  color: #fff;
+  padding: 80px 20px;
+  text-align: center;
+  animation: fadeIn 2s ease-in-out;
+}
+@keyframes pattern-scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 150px 150px; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary {
+  background-color: #ff7f50;
+  color: white;
+  padding: 12px 24px;
+  margin: 10px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: scale(1.1);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+:host {
+  display: block;
+}
+
+.hero {
+  height: 70vh;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  // يمكنك تغيير الصورة الخلفية من هنا
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?q=80&w=2070') no-repeat center center/cover;
+  padding: 1rem;
+}
+
+.hero-content {
+  animation: fadeIn 1s 0.2s ease-out forwards;
+  opacity: 0;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.hero-button {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s, transform 0.3s;
+  border: 2px solid transparent;
+
+  &:hover {
+    background-color: transparent;
+    border-color: white;
+    transform: translateY(-3px);
+  }
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1rem;
+}
+
+.home-section {
+  margin-bottom: 5rem;
+  // This class can be added by an Intersection Observer to trigger animations on scroll
+  // For now, we apply it directly.
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 3rem;
+  position: relative;
+  padding-bottom: 1rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: var(--accent-color);
+  }
+}
+
+.about-section {
+  text-align: center;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  p {
+    font-family: var(--font-reading);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+
+  /* الحالة عند وجود مقالة واحدة */
+  &.single-article {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    app-article-card {
+      width: 30%;
+      min-width: 280px; // للتأكد أنه ما يصغر كثير على الشاشات الصغيرة
+    }
+  }
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.art-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  aspect-ratio: 1 / 1;
+  display: block;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .art-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+    color: white;
+
+    h3 {
+      transform: translateY(15px);
+      transition: transform 0.4s ease;
+      font-size: 1.2rem;
+    }
+  }
+
+  &:hover {
+    img { transform: scale(1.05); }
+    .art-overlay { opacity: 1; h3 { transform: translateY(0); } }
+  }
+}
+
+.timeline {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+  &::after { // The central line
+    content: '';
+    position: absolute;
+    width: 3px;
+    background-color: var(--border-color);
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -1.5px;
+  }
+}
+
+.timeline-item {
+  padding: 10px 40px;
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+
+  &:nth-child(odd) {
+    left: 0;
+    .timeline-content::after { // Arrow
+      content: " ";
+      height: 0;
+      position: absolute;
+      top: 22px;
+      width: 0;
+      z-index: 1;
+      right: -10px;
+      border: medium solid var(--bg-secondary);
+      border-width: 10px 0 10px 10px;
+      border-color: transparent transparent transparent var(--bg-secondary);
+    }
+  }
+  &:nth-child(even) {
+    left: 50%;
+    .timeline-content::after { // Arrow
+      content: " ";
+      height: 0;
+      position: absolute;
+      top: 22px;
+      width: 0;
+      z-index: 1;
+      left: -10px;
+      border: medium solid var(--bg-secondary);
+      border-width: 10px 10px 10px 0;
+      border-color: transparent var(--bg-secondary) transparent transparent;
+    }
+  }
+
+  .timeline-icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: -11.5px;
+    top: 32px;
+    background-color: var(--accent-color);
+    border: 4px solid var(--bg-primary);
+    border-radius: 50%;
+    z-index: 2;
+  }
+
+  &:nth-child(even) .timeline-icon {
+    left: -8.5px;
+  }
+
+  .timeline-content {
+    padding: 20px 30px;
+    background-color: var(--bg-secondary);
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+}
+
+.timeline-date {
+  font-weight: 600;
+  color: var(--accent-color);
+}
+.timeline-title {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.timeline-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.section-link {
+  text-align: center;
+  margin-top: 3rem;
+  a {
+    font-weight: 600;
+    color: var(--accent-color);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+    &:hover {
+      border-color: var(--accent-color);
+    }
+  }
+}
+
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .timeline::after { left: 10px; }
+  .timeline-item { width: 100%; padding-left: 50px; padding-right: 0; }
+  .timeline-item:nth-child(even) { left: 0; }
+  .timeline-item .timeline-icon { left: 0; }
+  .timeline-item:nth-child(odd) .timeline-content::after {
+    border-width: 10px 10px 10px 0;
+    border-color: transparent var(--bg-secondary) transparent transparent;
+    left: -10px;
+    right: auto;
+  }
+}
+// --- المتغيرات الرئيسية (يمكنك تعديل الألوان والخطوط من هنا) ---
+$primary-color: #6d28d9; // لون بنفسجي مميز
+$primary-color-hover: #5b21b6; // لون أغمق عند التمرير
+$text-color-dark: #111827;
+$text-color-light: #4b5563;
+$background-color: #f9fafb; // لون خلفية رمادي فاتح جدًا
+$font-family-main: 'Cairo', sans-serif; // مثال: استخدام خط "كايرو"
+
+// --- تنسيق القسم الرئيسي ---
+.hero-section {
+  background-color: $background-color;
+  padding: 5rem 1.5rem; // مساحة داخلية كبيرة
+  font-family: $font-family-main;
+  direction: rtl; // ضمان اتجاه النص من اليمين لليسار
+}
+
+.hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// --- تنسيق تقسيم الأعمدة ---
+.hero-layout {
+  display: flex;
+  align-items: center;
+  gap: 4rem; // مسافة بين العمودين
+  flex-direction: column; // عمود واحد على شاشات الموبايل
+}
+
+// --- تنسيق عمود النص ---
+.hero-text {
+  text-align: center; // محاذاة للنص في الوسط على الموبايل
+  flex-basis: 58%; // يأخذ مساحة أكبر
+}
+
+.hero-title {
+  font-size: 2.8rem; // حجم خط كبير
+  font-weight: 800;
+  color: $text-color-dark;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: $text-color-light;
+  margin-top: 1.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-button {
+  display: inline-block;
+  background-color: $primary-color;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 1rem 2.5rem;
+  border-radius: 0.5rem;
+  margin-top: 2.5rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 10px 20px rgba($primary-color, 0.2);
+
+  &:hover {
+    background-color: $primary-color-hover;
+    transform: translateY(-3px); // تأثير بسيط عند التمرير
+  }
+}
+
+// --- تنسيق عمود الصورة ---
+.hero-image {
+  position: relative;
+  flex-basis: 42%; // يأخذ مساحة أصغر
+
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem; // حواف دائرية
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.social-icons {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 1.5rem;
+
+  a {
+    color: $text-color-light;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+// --- التجاوب مع الشاشات (Responsive Design) ---
+@media (min-width: 1024px) {
+  .hero-layout {
+    flex-direction: row; // تحويله لعمودين على الشاشات الكبيرة
+  }
+
+  .hero-text {
+    text-align: right; // محاذاة النص لليمين
+  }
+
+  .hero-title {
+    font-size: 3.8rem; // تكبير الخط على الشاشات الكبيرة
+  }
+
+  .hero-subtitle {
+    margin-right: 0; // إزالة الهامش الأيمن التلقائي
+  }
+}
