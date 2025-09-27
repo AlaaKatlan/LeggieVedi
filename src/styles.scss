@@ -1,25 +1,28 @@
 /* --- 1. استيراد الخطوط --- */
 @font-face {
   font-family: 'UthmanicHafs';
-  src: url('/assets/fonts/KFGQPCUthmanicScriptHAFSRegular.otf') format('otf');
+  src: url('/assets/fonts/UthmanicHafs.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
-@import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-/* --- 2. متغيرات الثيم --- */
+/* --- 2. متغيرات الثيم المحسّنة --- */
 :root {
   --font-arabic: 'UthmanicHafs', serif;
-  --font-latin: 'Readex Pro', sans-serif;
+  --font-ui: 'Inter', sans-serif;
+  --font-reading: 'Merriweather', serif;
+
   --transition-speed: 0.3s ease;
 
   // Light Theme
-  --bg-primary: #f7f7f7;
+  --bg-primary: #f8f9fa;
   --bg-secondary: #ffffff;
   --text-primary: #212529;
   --text-secondary: #6c757d;
-  --border-color: #e0e0e0;
+  --border-color: #dee2e6;
   --accent-color: #007bff;
   --accent-hover: #0056b3;
 }
@@ -27,11 +30,11 @@
 [data-theme="dark"] {
   --bg-primary: #121212;
   --bg-secondary: #1e1e1e;
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0a0;
-  --border-color: #333333;
-  --accent-color: #269fff;
-  --accent-hover: #52b7ff;
+  --text-primary: #e9ecef;
+  --text-secondary: #adb5bd;
+  --border-color: #343a40;
+  --accent-color: #4dabf7;
+  --accent-hover: #74c0fc;
 }
 
 /* --- 3. التنسيق الأساسي --- */
@@ -41,7 +44,31 @@
 
 body {
   margin: 0;
-  font-family: var(--font-latin);
+  font-family: var(--font-ui);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* Prevent the whole page from scrolling */
+}
+
+body {
+  font-family: var(--font-ui);
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color var(--transition-speed), color var(--transition-speed);

@@ -1,9 +1,9 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { SupabaseService } from '../../core/services/supabase.service';
-import { ThemeService } from '../../core/services/theme.service';
-import { Surah } from '../../core/models/surah.model';
+import { SupabaseService } from '../../../core/services/supabase.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { Surah } from '../../../core/models/surah.model';
 
 @Component({
   selector: 'app-surah-list',
@@ -13,7 +13,7 @@ import { Surah } from '../../core/models/surah.model';
   styleUrls: ['./surah-list.component.scss'],
 })
 export class SurahListComponent implements OnInit {
-  supabase = inject(SupabaseService);
+   supabase = inject(SupabaseService);
   themeService = inject(ThemeService);
 
   allSurahs = signal<Surah[]>([]);

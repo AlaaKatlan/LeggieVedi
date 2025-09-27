@@ -1,0 +1,14 @@
+<a [routerLink]="['/blog', article.slug]" class="article-card">
+
+  <div class="card-image-container">
+    <img alt="" [src]="article.cover_image_url || 'assets/images/placeholder.jpg'"
+         [alt]="article.title"
+         class="card-image">
+  </div>
+
+  <div class="card-content">
+    <h3 class="card-title">{{ article.title }}</h3>
+    <p class="card-date">{{ article.published_at | date: 'longDate' }}</p>
+  </div>
+
+</a>

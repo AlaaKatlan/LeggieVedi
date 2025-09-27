@@ -129,12 +129,13 @@
 //     this.activeFootnoteText.set(null);
 //   }
 // }
-import { Component, computed, Input, signal } from '@angular/core';
+import { Component, computed, inject, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SupabaseService } from '../../core/services/supabase.service';
-import { AyahFull } from '../../core/models/ayah.model';
-import { Footnote } from '../../core/models/footnote.model';
-import { Surah } from '../../core/models/surah.model';
+import { SupabaseService } from '../../../core/services/supabase.service';
+import { AyahFull } from '../../../core/models/ayah.model';
+import { Footnote } from '../../../core/models/footnote.model';
+import { Surah } from '../../../core/models/surah.model';
+import { QuranBookmarkService } from '../../../core/services/quran-bookmark.service';
 
 type TextSegment = string | Footnote;
 
@@ -150,6 +151,7 @@ export class ReaderComponent {
   surahInfo = signal<Surah | null>(null);
   activeFootnoteText = signal<string | null>(null);
   ayahSearchTerm = signal<string>('');
+  public bookmarkService = inject(QuranBookmarkService);
 
   @Input()
   set id(surahId: string) {

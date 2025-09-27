@@ -1,0 +1,236 @@
+/* الحاوية الرئيسية */
+.main-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* القائمة */
+.sidebar {
+  width: 25%;
+  background-color: #f8f8f8;
+  border-right: 1px solid #ddd;
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+}
+
+/* المحتوى */
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* زر الهمبرغر */
+.menu-toggle {
+  display: none; /* يظهر فقط على الموبايل */
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 2000;
+}
+
+/* الخلفية لما القائمة مفتوحة على الموبايل */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
+/* ===== Responsive (موبايل) ===== */
+@media (max-width: 768px) {
+  /* إخفاء القائمة افتراضيًا */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+    z-index: 1000;
+    width: 75%;
+  }
+
+  /* لما تكون مفتوحة */
+  .main-container.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  /* إظهار الخلفية */
+  .main-container.sidebar-open .sidebar-backdrop {
+    display: block;
+  }
+
+  /* إظهار زر الهمبرغر */
+  .menu-toggle {
+    display: block;
+  }
+}
+/* ===== الإعدادات العامة ===== */
+// * {
+//   margin: 0;
+//   padding: 0;
+//   box-sizing: border-box;
+// }
+
+// body, html {
+//   font-family: 'Amiri', serif;
+//   background-color: #fefdf9;
+//   color: #2f3e46;
+//   direction: rtl; /* لأن التطبيق عربي */
+// }
+
+// /* ===== الحاوية الرئيسية ===== */
+// .main-container {
+//   display: flex;
+//   height: 100vh;
+//   overflow: hidden;
+//   position: relative;
+// }
+
+// /* ===== القائمة (Sidebar) ===== */
+// .sidebar {
+//   width: 25%;
+//   background: linear-gradient(180deg, #f8faf5, #f3f7ee);
+//   border-left: 1px solid #d4e3d4;
+//   padding: 20px 15px;
+//   overflow-y: auto;
+//   transition: transform 0.3s ease-in-out;
+// }
+
+// .sidebar-title {
+//   font-size: 1.5rem;
+//   color: #357960;
+//   margin-bottom: 20px;
+//   text-align: center;
+//   font-weight: bold;
+//   border-bottom: 2px solid #c7d9c7;
+//   padding-bottom: 10px;
+// }
+
+// .sidebar::-webkit-scrollbar {
+//   width: 8px;
+// }
+
+// .sidebar::-webkit-scrollbar-thumb {
+//   background: #a0c5dd;
+//   border-radius: 4px;
+// }
+
+// /* ===== عناصر السور داخل القائمة ===== */
+// app-surah-list {
+//   display: block;
+// }
+
+// .surah-link {
+//   display: block;
+//   padding: 12px 10px;
+//   margin-bottom: 8px;
+//   background: #ffffff;
+//   color: #2f3e46;
+//   text-decoration: none;
+//   border: 1px solid #e2e8e2;
+//   border-radius: 8px;
+//   font-size: 1.1rem;
+//   text-align: center;
+//   transition: all 0.3s ease;
+//   cursor: pointer;
+// }
+
+// .surah-link:hover,
+// .surah-link.active {
+//   background: #eaf3ea;
+//   color: #357960;
+//   border-color: #b6d1b6;
+//   box-shadow: 0 2px 6px rgba(53, 121, 96, 0.2);
+// }
+
+// /* ===== المحتوى (Main Content) ===== */
+// .content {
+//   flex: 1;
+//   padding: 25px;
+//   overflow-y: auto;
+//   background: #fffefb;
+//   position: relative;
+// }
+
+// .content h1 {
+//   font-size: 2rem;
+//   color: #357960;
+//   margin-bottom: 15px;
+// }
+
+// /* ===== زر الهمبرغر ===== */
+// .menu-toggle {
+//   display: none;
+//   position: absolute;
+//   top: 15px;
+//   right: 15px;
+//   background: #357960;
+//   color: white;
+//   border: none;
+//   font-size: 1.8rem;
+//   padding: 8px 12px;
+//   border-radius: 6px;
+//   cursor: pointer;
+//   z-index: 2000;
+//   transition: background 0.3s;
+// }
+
+// .menu-toggle:hover {
+//   background: #2b5f4c;
+// }
+
+// /* ===== الخلفية عند فتح القائمة في الموبايل ===== */
+// .sidebar-backdrop {
+//   position: fixed;
+//   inset: 0;
+//   background: rgba(0, 0, 0, 0.4);
+//   z-index: 999;
+//   display: none;
+//   transition: opacity 0.3s ease;
+// }
+
+// /* ===== الموبايل (Responsive) ===== */
+// @media (max-width: 768px) {
+//   /* إخفاء القائمة افتراضيًا */
+//   .sidebar {
+//     position: fixed;
+//     top: 0;
+//     right: 0;
+//     height: 100%;
+//     transform: translateX(100%);
+//     z-index: 1000;
+//     width: 75%;
+//   }
+
+//   /* لما تكون مفتوحة */
+//   .main-container.sidebar-open .sidebar {
+//     transform: translateX(0);
+//   }
+
+//   /* إظهار الخلفية */
+//   .main-container.sidebar-open .sidebar-backdrop {
+//     display: block;
+//   }
+
+//   /* إظهار زر الهمبرغر */
+//   .menu-toggle {
+//     display: block;
+//   }
+
+//   /* المحتوى لما تكون القائمة مفتوحة */
+//   .main-container.sidebar-open .content {
+//     pointer-events: none; /* يمنع النقر على المحتوى */
+//   }
+// }

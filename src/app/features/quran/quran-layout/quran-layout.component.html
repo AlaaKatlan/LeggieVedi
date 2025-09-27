@@ -1,16 +1,19 @@
 <div class="main-container" [class.sidebar-open]="isSidebarOpen()">
 
+  <!-- القائمة -->
   <aside class="sidebar">
-    <app-surah-list />
+    <app-surah-list></app-surah-list>
   </aside>
 
+  <!-- المحتوى -->
   <main class="content">
     <button class="menu-toggle" (click)="isSidebarOpen.set(true)">
       ☰
     </button>
-    <router-outlet />
+    <router-outlet></router-outlet>
   </main>
 
+  <!-- الخلفية عند فتح القائمة في الموبايل -->
   @if (isSidebarOpen()) {
     <div class="sidebar-backdrop" (click)="isSidebarOpen.set(false)"></div>
   }

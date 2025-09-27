@@ -1,0 +1,31 @@
+<!-- <div [@routeAnimations]="o.isActivated ? o.activatedRoute : ''">
+  <router-outlet #o="outlet"></router-outlet>
+</div> -->
+
+<app-header />
+
+<main class="main-content">
+  <div [@routeAnimations]="o.isActivated ? o.activatedRoute : ''">
+    <router-outlet #o="outlet"></router-outlet>
+  </div>
+</main>
+
+<!-- <app-footer /> -->
+
+<!-- <div class="main-container" [class.sidebar-open]="isSidebarOpen()">
+
+  <aside class="sidebar">
+    <app-surah-list />
+  </aside>
+
+  <main class="content">
+    <button class="menu-toggle" (click)="isSidebarOpen.set(true)">
+      ☰
+    </button>
+    <router-outlet />
+  </main>
+
+  @if (isSidebarOpen()) {
+    <div class="sidebar-backdrop" (click)="isSidebarOpen.set(false)"></div>
+  }
+</div> -->

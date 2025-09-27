@@ -204,3 +204,15 @@
 .surah-link.active .surah-meta-info {
   border-top-color: rgba(255, 255, 255, 0.2);
 }
+.sidebar {
+  background: #fefcf5;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}

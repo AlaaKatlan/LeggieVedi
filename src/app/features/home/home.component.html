@@ -1,0 +1,26 @@
+Nabil Al-Muhaini
+Artist, Writer, and Spiritual Thinker
+
+Latest Articles
+@for (article of latestArticles(); track article.id) { } @empty {
+No articles found.
+
+}
+Art Gallery
+@for (art of artworks(); track art.id) {
+
+{{ art.title }}
+} @empty {
+No artwork to display.
+
+}
+Milestones
+@for (item of achievements(); track item.id) {
+{{ item.title }}
+{{ item.achievement_date | date: 'longDate' }}
+{{ item.description }}
+
+} @empty {
+No achievements listed yet.
+
+}

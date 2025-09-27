@@ -1,9 +1,8 @@
 <nav class="surah-nav">
   @for (surah of filteredSurahs(); track surah.id) {
-    <a class="surah-link"
-       [routerLink]="['/surah', surah.id]"
-       routerLinkActive="active">
-
+<a class="surah-link"
+   [routerLink]="['/quran', 'surah', surah.id]"
+   routerLinkActive="active">
       <div class="surah-main-info">
         <span class="surah-number">{{ surah.order_number }}</span>
         <div class="surah-names">

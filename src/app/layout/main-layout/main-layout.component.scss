@@ -2,13 +2,16 @@
   display: block;
   height: 100vh;
   width: 100vw;
+  min-height: 100vh;
   overflow: hidden;
 }
 
 .main-container {
   display: flex;
+  flex: 1; /* يخلي الـ main يتمدد وياخذ المساحة الفارغة */
   height: 100%;
-  position: relative;
+  position: relative;  overflow-y: auto; /* يسمح بالسكرول داخل الصفحة */
+
 }
 
 .sidebar {
@@ -29,13 +32,14 @@
 }
 
 // عناصر التحكم في القائمة (مخفية على الشاشات الكبيرة)
-.menu-toggle, .sidebar-backdrop {
+.menu-toggle,
+.sidebar-backdrop {
   display: none;
 }
 
-
 // --- الجزء الخاص بالتجاوبية (Responsive) ---
-@media (max-width: 992px) { // للشاشات الصغيرة والمتوسطة
+@media (max-width: 992px) {
+  // للشاشات الصغيرة والمتوسطة
   .sidebar {
     position: fixed;
     top: 0;
@@ -43,7 +47,7 @@
     bottom: 0;
     z-index: 1000;
     transform: translateX(-100%); // إخفاء القائمة خارج الشاشة
-    box-shadow: 4px 0px 15px rgba(0,0,0,0.1);
+    box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.1);
   }
 
   .main-container.sidebar-open .sidebar {
@@ -69,11 +73,23 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 999;
   }
 
   .content {
     padding-top: 70px; // إضافة مساحة لزر القائمة
   }
+}
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; // Use full viewport height
+  background-color: var(--bg-primary);
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto; // Allow this area to scroll
+  position: relative;
 }

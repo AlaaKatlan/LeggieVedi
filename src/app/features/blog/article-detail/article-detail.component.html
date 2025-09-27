@@ -1,0 +1,22 @@
+<div class="article-container">
+  @if (article(); as art) {
+    <!-- رأس المقال -->
+    <header class="article-header">
+      <button (click)="goBack()" class="back-button">← Go Back</button>
+      <h1 class="article-title">{{ art.title }}</h1>
+      <p class="article-meta">Published on {{ art.published_at | date: 'fullDate' }}</p>
+    </header>
+
+    <!-- صورة الغلاف -->
+    @if (art.cover_image_url) {
+      <img alt="" [src]="art.cover_image_url" [alt]="art.title" class="cover-image">
+    }
+
+    <!-- محتوى المقال -->
+    <article class="article-content" [innerHTML]="art.content"></article>
+
+  } @else {
+    <!-- حالة التحميل أو الخطأ -->
+    <p class="loading-message">Loading article...</p>
+  }
+</div>

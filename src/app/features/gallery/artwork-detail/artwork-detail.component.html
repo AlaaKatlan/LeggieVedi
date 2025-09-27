@@ -1,0 +1,37 @@
+<section class="hero">
+  </section>
+
+<div class="container">
+  <section class="home-section">
+    <h2>Latest Articles</h2>
+    <div class="grid">
+      @for (article of latestArticles(); track article.id) {
+        @if(article.slug) {
+          <app-article-card [article]="article" />
+        }
+      } @empty {
+        <p>No articles found.</p>
+      }
+    </div>
+  </section>
+
+  <section class="home-section">
+    <h2 class="section-title">Featured Artwork</h2>
+    <div class="gallery-grid">
+      @for (art of artworks(); track art.id) {
+        <a class="art-item" [routerLink]="['/artwork', art.id]">
+          <img alt=""  [src]="art.image_url" [alt]="art.title">
+          <div class="art-overlay">
+            <h3>{{ art.title }}</h3>
+          </div>
+        </a>
+      } @empty {
+        <p>No artwork to display yet.</p>
+      }
+    </div>
+  </section>
+
+  <section class="home-section">
+    <h2 class="section-title">Milestones</h2>
+    </section>
+</div>

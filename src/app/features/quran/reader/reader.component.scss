@@ -7,6 +7,27 @@
   background: var(--bg-secondary);
   animation: fadeIn 0.5s ease-in-out;
 }
+.ayah {
+  font-size: 1.4rem;
+  line-height: 2.2rem;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #fdfcf7;
+  border-bottom: 1px solid #e7ece7;
+  border-radius: 6px;
+}
+
+.ayah:hover {
+  background: #f3f8f3;
+}
+
+.basmala {
+  text-align: center;
+  font-size: 1.6rem;
+  color: #357960;
+  margin: 20px 0;
+  font-weight: bold;
+}
 
 .surah-title-ar {
   font-family: var(--font-arabic);
@@ -279,4 +300,35 @@
   font-size: 0.9em;
   font-family: var(--font-ui);
   margin-bottom: 8px;
+}
+
+.ayah-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.bookmark-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text-secondary); // اللون الافتراضي
+    transition: all 0.3s ease;
+  }
+
+  // عندما تكون الآية في المفضلة
+  &.bookmarked svg {
+    fill: var(--accent-color); // اللون عند الحفظ
+    transform: scale(1.1);
+  }
+
+  &:hover svg {
+    fill: var(--accent-color);
+  }
 }
