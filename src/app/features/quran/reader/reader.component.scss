@@ -332,3 +332,7 @@
     fill: var(--accent-color);
   }
 }
+.ayah-card.selected {
+  background-color: #e0f7ff; /* لون أزرق فاتح للآية المختارة */
+  border-left: 3px solid #2196f3;
+}

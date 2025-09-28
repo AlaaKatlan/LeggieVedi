@@ -133,7 +133,8 @@
 @if (filteredAyahs().length > 0) {
   <div class="reader-container">
     @for (ayah of filteredAyahs(); track ayah.ayah_id) {
-      <div class="ayah-card">
+      <div class="ayah-card" [id]="'ayah-' + ayah.verse_number"
+     [class.selected]="ayah.verse_number === selectedAyah()">
         <div class="ayah-header">
           <span class="ayah-number">{{ surahInfo()?.order_number }}:{{ ayah.verse_number }}</span>
           <!-- <button

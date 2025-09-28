@@ -1,10 +1,50 @@
+<!-- حاوية رئيسية -->
+<div class="surah-list-container">
 
+  <!-- شريط البحث والفلاتر -->
+  <div class="list-header">
 
-<nav class="surah-nav">
-  @for (surah of filteredSurahs(); track surah.id) {
-<a class="surah-link"
-   [routerLink]="['/quran', 'surah', surah.id]"
-   routerLinkActive="active">
+    <!-- فلتر البحث -->
+    <!-- <input type="text" placeholder="ابحث عن السورة..." [ngModel]="searchTerm()" (ngModelChange)="onSearch($event)" /> -->
+
+    <!-- فلتر السور -->
+    <div class="filter-group">
+      <label>Scegli la Sura:</label>
+      <select [ngModel]="selectedSurahId()" (ngModelChange)="onSurahChange($event)">
+        <option [ngValue]="null">Tutti i muri</option>
+        <option *ngFor="let surah of filteredSurahs()" [ngValue]="surah.id">
+          {{ surah.name_ar }} - {{ surah.name_en }}
+        </option>
+      </select>
+    </div>
+
+    <!-- فلتر الآيات -->
+    <div class="filter-group">
+      <label>اختر الآية:</label>
+      <!-- <select [(ngModel)]="selectedAyah">
+        <option [ngValue]="null">كل الآيات</option>
+        <option *ngFor="let ayah of filteredAyahs()" [ngValue]="ayah">
+          {{ ayah }}
+        </option>
+      </select> -->
+      <select [ngModel]="selectedAyah()" (ngModelChange)="onAyahChange($event)">
+        <option [ngValue]="null">Tutti i versi</option>
+        <option *ngFor="let ayah of filteredAyahs()" [ngValue]="ayah">
+          {{ ayah }}
+        </option>
+      </select>
+    </div>
+
+    <!-- زر تغيير الثيم -->
+    <!-- <button class="theme-toggle" (click)="toggleTheme()">
+      <img src="assets/icons/theme.svg" alt="Toggle Theme" />
+    </button> -->
+  </div>
+
+  <!-- قائمة السور -->
+  <nav class="surah-nav">
+    <a *ngFor="let surah of filteredSurahs()" class="surah-link" [routerLink]="['/quran', 'surah', surah.id]"
+      routerLinkActive="active">
       <div class="surah-main-info">
         <span class="surah-number">{{ surah.order_number }}</span>
         <div class="surah-names">
@@ -21,7 +61,6 @@
           <span>{{ surah.ayah_count }} Verses</span>
         </div>
       </div>
-
     </a>
-  }
-</nav>
+  </nav>
+</div>

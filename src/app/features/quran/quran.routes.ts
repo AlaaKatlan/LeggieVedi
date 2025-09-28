@@ -17,6 +17,12 @@ export const QURAN_ROUTES: Routes = [
         // هذا المسار يعرض السورة داخل <router-outlet> الخاص بـ QuranLayoutComponent
         path: 'surah/:id',
         loadComponent: () => import('./reader/reader.component').then(c => c.ReaderComponent)
+      },
+      {
+        // مسار جديد للآية داخل السورة
+        path: 'surah/:id/ayah/:ayahNumber',
+        loadComponent: () =>
+          import('./reader/reader.component').then(c => c.ReaderComponent),
       }
     ]
   }
