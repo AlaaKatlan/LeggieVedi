@@ -10,31 +10,55 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 /* --- 2. متغيرات الثيم المحسّنة --- */
+// ============================================
+// MODERN QURAN READER STYLES
+// ============================================
+
+// --- GLOBAL CSS VARIABLES (add to styles.scss) ---
 :root {
-  --font-arabic: 'UthmanicHafs', serif;
-  --font-ui: 'Inter', sans-serif;
-  --font-reading: 'Merriweather', serif;
+  // Ocean Blue & Emerald Theme
+  --primary: #01579b;
+  --primary-dark: #004d7a;
+  --primary-light: #0288d1;
+  --accent: #00897b;
+  --accent-light: #26a69a;
+  --accent-gradient: linear-gradient(135deg, #01579b, #00897b);
 
-  --transition-speed: 0.3s ease;
+  // Neutrals
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --border: #e2e8f0;
 
-  // Light Theme
-  --bg-primary: #f8f9fa;
-  --bg-secondary: #ffffff;
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --border-color: #dee2e6;
-  --accent-color: #007bff;
-  --accent-hover: #0056b3;
+  // Shadows
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 20px rgba(1, 87, 155, 0.3);
+
+  // Radius
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  // Transitions
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="dark"] {
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --text-primary: #e9ecef;
-  --text-secondary: #adb5bd;
-  --border-color: #343a40;
-  --accent-color: #4dabf7;
-  --accent-hover: #74c0fc;
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #64748b;
+  --border: #334155;
 }
 
 /* --- 3. التنسيق الأساسي --- */

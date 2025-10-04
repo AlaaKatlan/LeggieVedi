@@ -1,219 +1,317 @@
-// الكود الكامل والصحيح لملف SCSS
+
 .reader-header {
-  text-align: center;
-  padding: 40px 20px;
-  margin-bottom: 30px;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  animation: fadeIn 0.5s ease-in-out;
-}
-.ayah {
-  font-size: 1.4rem;
-  line-height: 2.2rem;
-  margin-bottom: 12px;
-  padding: 10px;
-  background: #fdfcf7;
-  border-bottom: 1px solid #e7ece7;
-  border-radius: 6px;
+  background: var(--accent-gradient);
+  color: white;
+  padding: 4rem 2rem;
+  border-radius: 0 0 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+justify-content: center !important;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
-.ayah:hover {
-  background: #f3f8f3;
-}
-
-.basmala {
-  text-align: center;
-  font-size: 1.6rem;
-  color: #357960;
-  margin: 20px 0;
-  font-weight: bold;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .surah-title-ar {
   font-family: var(--font-arabic);
-  font-size: 3rem;
-  font-weight: normal;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
   margin: 0;
-  color: var(--accent-color);
+  justify-content: center !important;
+   text-align: center;
+  align-items: center;
+  justify-items: center;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.02em;
 }
 
 .surah-title-en {
   font-size: 1.5rem;
   font-weight: 300;
-  margin: 5px 0 15px 0;
-  color: var(--text-secondary);
+  margin: 1rem 0;
+  opacity: 0.95;  justify-content: center !important;
+  font-size: 2.5rem;text-align: center;
+  align-items: center;
+  justify-items: center;
 }
 
 .surah-details {
-  display: flex;
-  justify-content: center;
+  display:  flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  font-weight: 600;
+  justify-self: center;
+  justify-content: center;
+  width: 40%;
+  gap: 1rem;
+    justify-content: center !important;
+  font-size: 1.5rem;
+  text-align: center;
+  align-items: center;
+  justify-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-xl);
+  font-size: 0.95rem;
+  // font-weight: 600;
+  margin-top: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 
   .separator {
-    color: var(--accent-color);
+    opacity: 0.6;
   }
 }
 
-.other-names {
-  margin-top: 25px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+.ayah-search-container {
+  margin-top: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 
-.name-chip {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 15px;
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  background-color: var(--bg-primary);
+  .search-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-xl);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow-lg);
 
-  .phonetic {
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
 
-  .meaning {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+    &:focus {
+      outline: none;
+      border-color: white;
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-2px);
+    }
   }
 }
 
 .reader-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
 .ayah-card {
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
-  margin-bottom: 25px;
-  padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent-gradient);
+    opacity: 0;
+    transition: var(--transition);
+  }
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-light);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &.selected {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.1), var(--shadow-xl);
+
+    &::before {
+      opacity: 1;
+    }
   }
 }
 
 .ayah-header {
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--bg-tertiary);
 }
 
 .ayah-number {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--accent-color);
-  background-color: var(--bg-primary);
-  border-radius: 8px;
-  padding: 5px 10px;
-}
-
-.ayah-content {
-  // no direct styles needed for this wrapper
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideInUp {
-  from { transform: translate(-50%, -40%); opacity: 0; }
-  to { transform: translate(-50%, -50%); opacity: 1; }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  height: 3rem;
+  padding: 0 1rem;
+  background: var(--accent-gradient);
+  color: white;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: var(--shadow-md);
 }
 
 .arabic-text {
   font-family: var(--font-arabic);
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 2.5;
   text-align: right;
   direction: rtl;
-  line-height: 2.2;
-  margin: 0 0 25px 0;
-  padding-bottom: 25px;
-  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border-right: 4px solid var(--primary);
 }
 
 .primary-tafsir {
-  font-family: var(--font-reading);
   font-size: 1.1rem;
-  line-height: 1.9;
-  color: var(--text-primary);
+  line-height: 2;
+  color: var(--text-secondary);
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  margin-top: 1rem;
+}
+
+.interpreter-name {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 1rem;
+    background: var(--accent);
+    border-radius: 2px;
+  }
 }
 
 .extra-tafsirs {
-  margin-top: 20px;
-  border-top: 1px dashed var(--border-color);
-  padding-top: 20px;
+  margin-top: 1.5rem;
+  border-top: 2px dashed var(--border);
+  padding-top: 1.5rem;
 
   summary {
     cursor: pointer;
-    font-weight: 600;
-    color: var(--accent-color);
-    font-family: var(--font-ui);
-  }
-  .extra-tafsir-item {
-    padding: 15px;
-    margin-top: 10px;
-    background: var(--bg-primary);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    p, strong { margin: 0; font-family: var(--font-reading); }
-    strong { font-family: var(--font-ui); font-size: 0.9rem; margin-bottom: 5px; display: block; }
-  }
-}
+    font-weight: 700;
+    color: var(--primary);
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  font-size: 1.2rem;
-  color: var(--text-secondary);
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '▶';
+      transition: var(--transition);
+    }
+
+    &:hover {
+      background: var(--bg-tertiary);
+      transform: translateX(-4px);
+    }
+  }
+
+  &[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  .extra-tafsir-item {
+    padding: 1.5rem;
+    margin-top: 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--accent);
+    transition: var(--transition);
+
+    &:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    strong {
+      display: block;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      font-size: 0.95rem;
+    }
+  }
 }
 
 .footnote-btn {
-  background: none;
+  background: var(--primary);
+  color: white;
   border: none;
-  padding: 0;
-  margin: 0;
-  font-family: inherit;
-  font-size: 0.8em;
-  vertical-align: super;
-  margin: 0 2px;
-  color: var(--accent-color);
-  font-weight: bold;
+  padding: 0.125rem 0.5rem;
+  margin: 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  border-radius: 3px;
-  transition: background-color 0.2s;
+  transition: var(--transition);
+  vertical-align: super;
 
   &:hover {
-    background-color: var(--accent-color);
-    color: white;
+    background: var(--primary-dark);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-md);
   }
-}
-
-.header-footnote {
-  margin-left: 5px;
 }
 
 .footnote-backdrop {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
   z-index: 9998;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.2s ease;
 }
 
 .footnote-popover {
@@ -222,117 +320,90 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  max-width: 600px;
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  max-width: 650px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
   z-index: 9999;
   overflow: hidden;
-  animation: slideInUp 0.3s ease-out;
+  border: 1px solid var(--border);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -40%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .popover-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--bg-primary);
+  padding: 1.5rem 2rem;
+  background: var(--accent-gradient);
+  color: white;
 
   h3 {
     margin: 0;
-    font-size: 1.1rem;
-    color: var(--accent-color);
+    font-size: 1.25rem;
+    font-weight: 700;
   }
 
   .close-btn {
-    background: none;
+    background: rgba(255, 255, 255, 0.2);
     border: none;
-    font-size: 2rem;
-    font-weight: 300;
-    color: var(--text-secondary);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    color: white;
     cursor: pointer;
-    line-height: 1;
-    padding: 0;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     &:hover {
-      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
     }
   }
 }
 
 .popover-content {
-  padding: 20px 25px;
+  padding: 2rem;
   max-height: 60vh;
   overflow-y: auto;
-  line-height: 1.8;
-  font-size: 1rem;
-  color: var(--text-primary);
-}
+  line-height: 2;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
 
-.ayah-search-container {
-  margin-top: 30px;
-  width: 100%;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
 
-  .search-input {
-    width: 100%;
-    padding: 12px 20px;
-    border-radius: 25px;
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-family: var(--font-ui);
-    transition: all var(--transition-speed);
+  &::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+  }
 
-    &:focus {
-      outline: none;
-      border-color: var(--accent-color);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+  &::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: var(--radius-md);
+
+    &:hover {
+      background: var(--primary);
     }
   }
-}
-.interpreter-name {
-  font-weight: bold;
-  color: var(--text-secondary);
-  font-size: 0.9em;
-  font-family: var(--font-ui);
-  margin-bottom: 8px;
-}
-
-.ayah-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.bookmark-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--text-secondary); // اللون الافتراضي
-    transition: all 0.3s ease;
-  }
-
-  // عندما تكون الآية في المفضلة
-  &.bookmarked svg {
-    fill: var(--accent-color); // اللون عند الحفظ
-    transform: scale(1.1);
-  }
-
-  &:hover svg {
-    fill: var(--accent-color);
-  }
-}
-.ayah-card.selected {
-  background-color: #e0f7ff; /* لون أزرق فاتح للآية المختارة */
-  border-left: 3px solid #2196f3;
 }
