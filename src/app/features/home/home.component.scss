@@ -10,7 +10,7 @@
 // ============================================
 // HERO SECTION - STUNNING DESIGN
 // ============================================
-
+a{text-decoration: none;}
 .hero-section {
   position: relative;
   min-height: 90vh;
@@ -210,7 +210,7 @@
   padding: 1rem 2rem;
   border-radius: 50px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(1, 87, 155, 0.1);
+  // border: 1px solid rgba(1, 87, 155, 0.1);
 
   a {
     width: 45px;
@@ -223,7 +223,7 @@
     border-radius: 50%;
     transition: all 0.3s ease;
     font-size: 1.2rem;
-    border: 1px solid rgba(1, 87, 155, 0.1);
+    // border: 1px solid rgba(1, 87, 155, 0.1);
 
     &:hover {
       background: linear-gradient(135deg, #01579b, #00897b);
