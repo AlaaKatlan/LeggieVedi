@@ -182,9 +182,11 @@ justify-content: center !important;
   box-shadow: var(--shadow-md);
 }
 
-.arabic-text {
-  font-family: var(--font-arabic);
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
+ .arabic-text {
+  // font-family: var(--font-arabic);
+    font-family: 'Amiri Quran', serif !important;
+    font-feature-settings: "liga", "kern", "ccmp", "mark", "mkmk" !important;
+  font-size: clamp(1.1rem, 2vw, 2.2rem);
   line-height: 2.5;
   text-align: right;
   direction: rtl;

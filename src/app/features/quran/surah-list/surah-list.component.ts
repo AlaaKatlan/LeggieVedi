@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
@@ -14,9 +14,12 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./surah-list.component.scss'],
 })
 export class SurahListComponent implements OnInit {
+  @Output() openWord = new EventEmitter<string>();
+
   supabase = inject(SupabaseService);
   themeService = inject(ThemeService);
   router = inject(Router);
+  wordFilePath = signal<string | null>(null);
 
   allSurahs = signal<Surah[]>([]);
   searchTerm = signal<string>('');
@@ -41,14 +44,14 @@ export class SurahListComponent implements OnInit {
     const surah = this.allSurahs().find(s => s.id === this.selectedSurahId());
     return surah ? Array.from({ length: surah.ayah_count }, (_, i) => i + 1) : [];
   }
-onAyahChange(ayahNumber: number | null) {
-  this.selectedAyah.set(ayahNumber);
+  onAyahChange(ayahNumber: number | null) {
+    this.selectedAyah.set(ayahNumber);
 
-  if (this.selectedSurahId() && ayahNumber !== null) {
-    // التوجيه للرابط الخاص بالسورة والآية
-    this.router.navigate(['/quran', 'surah', this.selectedSurahId(), 'ayah', ayahNumber]);
+    if (this.selectedSurahId() && ayahNumber !== null) {
+      // التوجيه للرابط الخاص بالسورة والآية
+      this.router.navigate(['/quran', 'surah', this.selectedSurahId(), 'ayah', ayahNumber]);
+    }
   }
-}
 
   async ngOnInit() {
     const surahs = await this.supabase.getAllSurahs();
@@ -72,14 +75,22 @@ onAyahChange(ayahNumber: number | null) {
       this.router.navigate(['/quran', 'surah', surahId]);
     }
   }
-scrollToAyah(verseNumber: number) {
-  setTimeout(() => {
-    const el = document.getElementById(`ayah-${verseNumber}`);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 50);
-}onAyahSelect(verseNumber: number) {
-  this.selectedAyah.set(verseNumber);
-  this.scrollToAyah(verseNumber);
-}
+  scrollToAyah(verseNumber: number) {
+    setTimeout(() => {
+      const el = document.getElementById(`ayah-${verseNumber}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  } onAyahSelect(verseNumber: number) {
+    this.selectedAyah.set(verseNumber);
+    this.scrollToAyah(verseNumber);
+  }
+
+openDedica() {
+    this.openWord.emit('Dedica');
+  }
+
+openIntroduzione() {
+    this.openWord.emit('Introduzione');
+  }
 
 }

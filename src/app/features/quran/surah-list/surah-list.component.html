@@ -1,6 +1,15 @@
 <!-- حاوية رئيسية -->
 <div class="surah-list-container">
-
+  <div class="word-buttons">
+    <button (click)="openDedica()" class="word-btn">
+      <i class="fas fa-file-word"></i>
+      Dedica
+    </button>
+    <button (click)="openIntroduzione()" class="word-btn">
+      <i class="fas fa-file-word"></i>
+      Introduzione
+    </button>
+  </div>
   <!-- شريط البحث والفلاتر -->
   <div class="list-header">
 
@@ -20,7 +29,7 @@
 
     <!-- فلتر الآيات -->
     <div class="filter-group">
-      <label>اختر الآية:</label>
+      <label>Scegli il versetto:</label>
       <!-- <select [(ngModel)]="selectedAyah">
         <option [ngValue]="null">كل الآيات</option>
         <option *ngFor="let ayah of filteredAyahs()" [ngValue]="ayah">

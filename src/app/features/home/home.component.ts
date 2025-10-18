@@ -14,14 +14,13 @@ import { Achievement } from '../../core/models/achievement.model';
   imports: [
     CommonModule,
     ArticleCardComponent,
-    RouterModule // 2. أضف RouterModule إلى مصفوفة imports هنا
+    RouterModule
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  // ... بقية الكود يبقى كما هو
-  private supabase = inject(SupabaseService);
+   private supabase = inject(SupabaseService);
 
   latestArticles = signal<Article[]>([]);
   featuredArtworks = signal<Artwork[]>([]);

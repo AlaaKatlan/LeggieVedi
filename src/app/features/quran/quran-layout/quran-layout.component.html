@@ -1,20 +1,21 @@
-<div class="main-container" [class.sidebar-open]="isSidebarOpen()">
+<div class="main-container">
 
-  <!-- القائمة -->
   <aside class="sidebar">
-    <app-surah-list></app-surah-list>
+    <app-surah-list
+      (openWord)="showWord($event)">
+    </app-surah-list>
   </aside>
 
-  <!-- المحتوى -->
   <main class="content">
-    <button class="menu-toggle" (click)="isSidebarOpen.set(true)">
-      ☰
-    </button>
-    <router-outlet></router-outlet>
+    <ng-container *ngIf="currentComponent() === 'reader'">
+      <router-outlet></router-outlet>
+    </ng-container>
+
+    <ng-container *ngIf="currentComponent() === 'word'">
+      <app-word-viewer
+          [path]="wordFilePath()">
+      </app-word-viewer>
+    </ng-container>
   </main>
 
-  <!-- الخلفية عند فتح القائمة في الموبايل -->
-  @if (isSidebarOpen()) {
-    <div class="sidebar-backdrop" (click)="isSidebarOpen.set(false)"></div>
-  }
 </div>

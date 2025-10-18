@@ -19,10 +19,12 @@
       <div class="hero-image">
         <img src="assets/image/nabil.jpg" alt="صورة نبيل رضا المهايني">
         <div class="social-icons">
-          <a href="https://www.youtube.com/@nabilmahayni8398" title="Youtube" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://www.youtube.com/@nabilmahayni8398" title="Youtube" target="_blank"><i
+              class="fa-brands fa-youtube"></i></a>
           <a href="https://api.whatsapp.com/send?phone=963944337838" title="Whatsapp" target="_blank"><i
               class="fa-brands fa-whatsapp"></i></a>
-          <a href="mailto:mahaininabil@gmail.com" title="بريد إلكتروني" target="_blank"><i class="fas fa-envelope"></i></a>
+          <a href="mailto:mahaininabil@gmail.com" title="بريد إلكتروني" target="_blank"><i
+              class="fas fa-envelope"></i></a>
         </div>
       </div>
 
@@ -35,11 +37,16 @@
   <section id="about" class="home-section about-section">
     <div class="about-content">
       <h2 class="section-title">نبذة</h2>
-      <p>
-        من مواليد دمشق 1944. أقمت في ايطاليا للدراسة ثم العمل بين عامي 1963 و 1986. تخرجت من أكاديمية الفنون الجميلة في
-        فلورنسا، ثم تخصصت في الإخراج التلفزيوني والسينمائي في روما. مسيرتي المهنية شملت التلفزيون والسينما والصحافة
-        والترجمة الأدبية، مما أتاح لي نشر قرابة الأربعين كتاباً، معظمها مترجم عن الإيطالية.
-      </p>
+      <div class="about-content">
+        <p>
+          من مواليد دمشق عام 1944، درس في إيطاليا ما بين 1963-1986 حيث تخرج من أكاديمية الفنون الجميلة في فلورنسا
+          (تخصص ديكور مسرح) وجامعة الدراسات الاجتماعية في روما (إخراج تلفزيوني وسينمائي).
+          <br><br>
+          مسيرته المهنية الطويلة شملت العمل خبيراً في الصندوق الدولي للتنمية الزراعية (IFAD) منذ 1983،
+          وإخراج أكثر من 185 فيلماً وثائقياً، ونشر حوالي 40 كتاباً أدبياً معظمها مترجم عن الإيطالية.
+          كما عمل مساعداً للمخرج الإيطالي الشهير بيير باولو بازوليني وصحافياً ومراسلاً في روما.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -62,7 +69,7 @@
     <div class="gallery-grid">
       @for (art of featuredArtworks(); track art.id) {
       <a class="art-item" [routerLink]="['/artwork', art.id]">
-        <img alt="" [src]="art.image_url" [alt]="art.title" loading="lazy">
+        <img alt="a" [src]="art.image_url" [alt]="art.title" loading="lazy">
         <div class="art-overlay">
           <h3>{{ art.title }}</h3>
         </div>
@@ -81,7 +88,7 @@
     <div class="timeline">
       <div class="timeline-item">
         <div class="timeline-icon"></div>
-        <div class="timeline-content">
+        <div class="timeline-content"  >
           <span class="timeline-date">1983 - الآن</span>
           <h3 class="timeline-title">خبير في الصندوق الدولي للتنمية الزراعية (IFAD)</h3>
           <p class="timeline-description">في روما ثم دمشق، متخصص في الإعلام، الاتصالات، والإشراف على المشاريع، والترجمة.
@@ -117,4 +124,98 @@
       </div>
     </div>
   </section>
+
+
+
+  <!-- SKILLS SECTION -->
+  <section class="home-section" dir="rtl">
+    <h2 class="section-title">المهارات والخبرات</h2>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>اللغات</h3>
+        <ul>
+          <li>العربية</li>
+          <li>الإيطالية</li>
+          <li>الإنجليزية</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>الإخراج والإنتاج</h3>
+        <ul>
+          <li>الإخراج السينمائي</li>
+          <li>الإخراج التلفزيوني</li>
+          <li>الأفلام الوثائقية</li>
+          <li>الإنتاج الإعلامي</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>الكتابة والترجمة</h3>
+        <ul>
+          <li>الكتابة الأدبية</li>
+          <li>الترجمة الأدبية</li>
+          <li>الصحافة</li>
+          <li>التحرير والمراجعة</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>التطوير والإعلام</h3>
+        <ul>
+          <li>الإعلام التنموي</li>
+          <li>الاتصالات</li>
+          <li>التسويق الثقافي</li>
+          <li>إدارة المشاريع</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>الفنون</h3>
+        <ul>
+          <li>الرسم والتصوير</li>
+          <li>ديكور المسرح والتلفزيون</li>
+          <li>الفن التشكيلي</li>
+          <li>التصميم</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>المنظمات والشراكات</h3>
+        <ul>
+          <li>IFAD</li>
+          <li>The Worldview International</li>
+          <li>التلفزيون الإيطالي (RAI)</li>
+          <li>المنظمات الدولية</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 </div>
+
+  <!-- CONTACT CARD -->
+  <section class="home-section" dir="rtl">
+    <h2 class="section-title">التواصل</h2>
+    <div class="contact-card">
+      <div class="contact-item">
+        <i class="fas fa-phone"></i>
+        <div class="contact-info">
+          <h4>الهاتف</h4>
+          <p><a href="tel:+963118881123" dir="ltr">+963 11 8881123</a></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <i class="fas fa-mobile-alt"></i>
+        <div class="contact-info">
+          <h4>الجوال</h4>
+          <p><a href="tel:+963944337838"  dir="ltr">+963 944337838</a></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <i class="fas fa-envelope"></i>
+        <div class="contact-info">
+          <h4>البريد الإلكتروني</h4>
+          <p>
+            <a href="mailto:mahaininabil@gmail.com">{{"mahaininabil@gmail.com"}}</a>
+            <br>
+            <a href="mailto:n.mahaini@ifad.org">{{"n.mahaini@ifad.org"}}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
