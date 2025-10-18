@@ -1,50 +1,71 @@
-import { Component } from '@angular/core';
-import { SupabaseService } from '../../core/services/supabase.service';
+
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// 1. استيراد DomSanitizer
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SupabaseService } from '../../core/services/supabase.service';
+
+interface Video {
+  id: number;
+  title: string;
+  url: string;
+  description?: string;
+  thumbnail?: string;
+}
 
 @Component({
-  selector: 'app-video-grid',
-  standalone: true,
-  templateUrl: './video-grid.component.html',
-  styleUrl: './video-grid.component.scss',
-  imports: [CommonModule]
+  selector: 'app-video-grid',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './video-grid.component.html',
+  styleUrls: ['./video-grid.component.scss']
 })
-export class VideoGridComponent {
-  videos: { id: number; title: string; url: string }[] = [];
-  loading = true;
+export class VideoGridComponent implements OnInit {
+  private supabaseService = inject(SupabaseService);
+  private sanitizer = inject(DomSanitizer);
 
-  // 2. إضافة "sanitizer" إلى الـ constructor
-  constructor(
-    private supabaseService: SupabaseService,
-    private sanitizer: DomSanitizer // <-- أضف هذا
-  ) { }
+  videos = signal<Video[]>([]);
+  loading = signal(true);
+  selectedVideo = signal<Video | null>(null);
 
-  ngOnInit(): void {
-    this.loadVideos();
-  }
+  ngOnInit(): void {
+    this.loadVideos();
+  }
 
-  async loadVideos() {
-    try {
-      this.videos = await this.supabaseService.getAllVideos();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.loading = false;
-    }
-  }
+  async loadVideos() {
+    try {
+      const data = await this.supabaseService.getAllVideos();
+      this.videos.set(data.map(v => ({
+        ...v,
+        thumbnail: this.getYoutubeThumbnail(v.url)
+      })));
+    } catch (error) {
+      console.error('Error loading videos:', error);
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
-  extractVideoId(url: string): string {
-    const match = url.match(/v=([a-zA-Z0-9_-]+)/);
-    return match ? match[1] : '';
-  }
+  extractVideoId(url: string): string {
+    const match = url.match(/v=([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : '';
+  }
 
-  // 3. إضافة هذه الدالة الجديدة
+  getYoutubeThumbnail(url: string): string {
+    const videoId = this.extractVideoId(url);
+    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  }
+
   getSafeEmbedUrl(url: string): SafeResourceUrl {
     const videoId = this.extractVideoId(url);
-    const embedUrl = 'https://www.youtube.com/embed/' + videoId;
-    // تخبر أنغولار أن يثق بهذا الرابط
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=0`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+  }
+
+  openVideo(video: Video) {
+    this.selectedVideo.set(video);
+  }
+
+  closeVideo() {
+    this.selectedVideo.set(null);
   }
 }
