@@ -1,14 +1,12 @@
 .article-container {
-  max-width: 800px; // أعرض قليلاً من القائمة
-  margin: 2rem auto;
-  padding: 1rem 1.5rem;
-  background: #fff;
-  border-radius: 8px;
-  // box-shadow: 0 2px 10px rgba(0,0,0,0.05); // اختياري
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  background: var(--bg-primary);
 }
 
 .article-header {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -16,86 +14,82 @@
 .back-button {
   background: none;
   border: none;
-  color: #007bff;
+  color: var(--primary);
   font-size: 1rem;
   cursor: pointer;
   margin-bottom: 1rem;
   padding: 0;
+  transition: color 0.3s ease;
+
   &:hover {
     text-decoration: underline;
   }
 }
 
 .article-title {
-  font-size: 2.8rem;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
 }
 
 .article-meta {
   font-size: 0.95rem;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .category-badge {
-    display: inline-block;
-    background-color: #f0f0f0;
-    color: #444;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-size: 0.85rem;
+  display: inline-block;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
 }
 
 .cover-image {
-max-width: 100%; // هذا هو السطر الأهم: يجعل الصورة لا تتجاوز عرض الأب
-  height: auto;    // يحافظ على نسبة أبعاد الصورة
-  display: block;  // يزيل أي مسافات إضافية تحت الصورة قد تظهر أحياناً
-  border-radius: 8px; // اختياري: إذا أردت حواف دائرية للصورة
-  margin-bottom: 1.5rem; // اختياري: مسافة أسفل الصورة
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-lg);
 }
 
 .article-content {
-  color: #333;
+  color: var(--text-secondary);
   font-size: 1.1rem;
-  line-height: 1.7;
+  line-height: 1.8;
 
-  // تنسيق المحتوى القادم من [innerHTML]
-  p {
-    margin-bottom: 1.5rem;
-  }
-
+  p { margin-bottom: 1.5rem; }
   h1, h2, h3, h4 {
-    margin-top: 2.5rem;
+    margin-top: 2rem;
     margin-bottom: 1rem;
     font-weight: 600;
   }
-
   ul, ol {
     padding-left: 2rem;
     margin-bottom: 1.5rem;
   }
-
   blockquote {
-    border-left: 4px solid #007bff;
+    border-left: 4px solid var(--primary);
     padding-left: 1rem;
     margin: 1.5rem 0;
     font-style: italic;
-    color: #555;
+    color: var(--text-secondary);
   }
-
   pre, code {
-    background-color: #f4f4f4;
-    border-radius: 5px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
     padding: 0.2rem 0.4rem;
-    font-family: monospace;
+    font-family: 'Courier New', monospace;
   }
-
   pre {
-    padding: 1rem;
+    padding: 1.5rem;
     overflow-x: auto;
   }
 }
@@ -104,48 +98,127 @@ max-width: 100%; // هذا هو السطر الأهم: يجعل الصورة ل�
 .empty-message {
   text-align: center;
   font-size: 1.2rem;
-  color: #777;
+  color: var(--text-tertiary);
   padding: 4rem 1rem;
 }
-.document-iframe {
-  width: 100%;
-  height: 90vh; // أو الارتفاع الذي تراه مناسباً
-  border: none;
-}
-// أضف هذا الكلاس الجديد
-.iframe-wrapper {
-  width: 100%;
-  overflow-x: auto; // هذا السطر يضيف التمرير الأفقي
-  -webkit-overflow-scrolling: touch; // لتحسين التمرير على آيفون
-  border-radius: 8px;
-  border: 1px solid #eee;
+
+/* 📄 Document Viewer Wrapper */
+.document-viewer-wrapper {
+  margin: 2rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--bg-secondary);
 }
 
-.document-iframe {
-  width: 800px; // نعطي الـ iframe عرضاً ثابتاً ليعمل التمرير
-  height: 90vh;
-  border: none;
-  display: block;
-}
 .iframe-controls {
   display: flex;
-  justify-content: flex-end; // يضع الزر على اليمين
-  margin-bottom: 1rem;
-  padding: 0 0.5rem; // يمنع الزر من الالتصاق بحافة الشاشة على الموبايل
+  justify-content: flex-end;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  gap: 0.5rem;
 }
 
 .control-btn {
   display: inline-block;
-  padding: 8px 16px;
-  background-color: #f0f0f0; // لون خلفية خفيف
-  color: #333; // لون النص
-  border-radius: 20px; // حواف دائرية
-  text-decoration: none; // إزالة الخط تحت الرابط
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 20px;
+  text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
+  font-weight: 600;
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: #e0e0e0; // تغيير اللون عند مرور الماوس
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.iframe-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-secondary);
+}
+
+.document-iframe {
+  width: 100%;
+  min-height: 600px;
+  border: none;
+  display: block;
+}
+
+.doc-viewer {
+  width: 100% !important;
+  min-height: 600px !important;
+}
+
+/* 📱 Mobile Responsive */
+@media (max-width: 768px) {
+  .article-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .article-title {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+  }
+
+  .article-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .article-content {
+    font-size: 1rem;
+    line-height: 1.7;
+
+    pre, code { font-size: 0.85rem; }
+    pre { padding: 1rem; }
+  }
+
+  .document-iframe {
+    min-height: 400px;
+  }
+
+  .doc-viewer {
+    min-height: 400px !important;
+  }
+
+  .iframe-controls {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .control-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .article-container {
+    padding: 1rem;
+  }
+
+  .article-title {
+    font-size: 1.5rem;
+  }
+
+  .article-meta {
+    gap: 0.25rem;
+  }
+
+  .document-iframe,
+  .doc-viewer {
+    min-height: 300px !important;
+  }
+
+  .control-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
   }
 }

@@ -1,9 +1,85 @@
-<div class="blog-container">
+<!-- <div class="blog-container">
   <header class="blog-header">
     <h1>Miscellaneous Writing</h1>
     <p>مجموعة من النصوص، المقالات، والوجدانيات</p>
   </header>
 
+  <div class="filter-bar">
+    @for (category of categories(); track category) {
+      <button
+        class="filter-btn"
+        [class.active]="category === activeCategory()"
+        (click)="setFilter(category)">
+        {{ category }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="loading-message">Loading articles...</p>
+  } @else {
+    <div class="articles-list">
+      @for (article of filteredArticles(); track article.id) {
+
+        <a class="article-card" [routerLink]="['/blog', article.slug]">
+          <h3>{{ article.title }}</h3>
+
+          @if (article.excerpt) {
+            <p class="excerpt">{{ article.excerpt }}</p>
+          }
+
+          <div class="card-footer">
+            <span class="category-badge">{{ article.category }}</span>
+            <span class="read-more">Read More →</span>
+          </div>
+        </a>
+
+      } @empty {
+        <p class="empty-message">No articles found for this category.</p>
+      }
+    </div>
+  }
+</div> -->
+<!-- FILE: src/app/features/blog/blog.component.html -->
+<!-- استبدل الـ header الموجود بهذا -->
+
+<section class="blog-hero">
+  <div class="stars"></div>
+
+  <!-- Satellite -->
+  <!-- <div class="satellite-container">
+    <div class="satellite">
+      <div class="satellite-body"></div>
+      <div class="satellite-panel left"></div>
+      <div class="satellite-panel right"></div>
+      <div class="satellite-antenna"></div>
+    </div> -->
+
+    <!-- Orbit Line -->
+    <!-- <div class="orbit"></div>
+  </div> -->
+
+  <!-- Hero Content -->
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <span class="title-word">Miscellaneous</span>
+      <span class="title-word">Writing</span>
+    </h1>
+    <p class="hero-subtitle">
+      مجموعة من النصوص، المقالات، والوجدانيات
+    </p>
+    <p class="hero-subtitle en">
+      A collection of texts, articles & reflections
+    </p>
+  </div>
+
+  <!-- Floating Elements -->
+  <div class="floating-element element-1"></div>
+  <div class="floating-element element-2"></div>
+  <div class="floating-element element-3"></div>
+</section>
+
+<div class="blog-container">
   <div class="filter-bar">
     @for (category of categories(); track category) {
       <button

@@ -1,53 +1,55 @@
 <div class="article-container">
-  @if (loading()) {
-    <p class="loading-message">Loading article...</p>
-  } @else {
+  @if (loading()) {
+    <p class="loading-message">جاري تحميل المقال...</p>
+  } @else {
 
-    @if (article(); as art) {
-      <header class="article-header">
-        <button (click)="goBack()" class="back-button">← Go Back</button>
-        <h1 class="article-title">{{ art.title }}</h1>
-        <p class="article-meta">
-          Published on {{ art.published_at | date: 'fullDate' }}
-          <span class="category-badge">{{ art.category }}</span>
-        </p>
-      </header>
+    @if (article(); as art) {
+      <header class="article-header">
+        <button (click)="goBack()" class="back-button">← العودة</button>
+        <h1 class="article-title">{{ art.title }}</h1>
+        <p class="article-meta">
+          نُشر في {{ art.published_at | date: 'fullDate' }}
+          <span class="category-badge">{{ art.category }}</span>
+        </p>
+      </header>
 
-      @if (art.cover_image_url) {
-        <img alt="" [src]="art.cover_image_url" [alt]="art.title" class="cover-image">
-      }
+      @if (art.cover_image_url) {
+        <img  alt=" " [src]="art.cover_image_url" [alt]="art.title" class="cover-image">
+      }
 
-            @if (art.is_link && art.article_link) {
-
+      @if (art.is_link && art.article_link) {
         @if (art.article_link.includes('docs.google.com')) {
-          <div class="iframe-controls">
-            <a [href]="art.article_link" target="_blank" rel="noopener noreferrer" class="control-btn">
-              🔗 فتح في نافذة جديدة
-            </a>
-          </div>
-          <div class="iframe-wrapper">
-            <iframe
-              class="document-iframe"
-              [src]="art.article_link + '?embedded=true' | safeUrl"
-              frameborder="0">
-            </iframe>
+          <div class="document-viewer-wrapper">
+            <div class="iframe-controls">
+              <a [href]="art.article_link" target="_blank" rel="noopener noreferrer" class="control-btn">
+                🔗 فتح في نافذة جديدة
+              </a>
+            </div>
+            <div class="iframe-wrapper">
+              <iframe
+                class="document-iframe"
+                [src]="art.article_link + '?embedded=true' | safeUrl"
+                frameborder="0"
+                title="{{ art.title }}">
+              </iframe>
+            </div>
           </div>
         } @else {
-          <ngx-doc-viewer
-            [url]="art.article_link"
-            viewer="google"
-            style="width:100%; height:90vh;">
-          </ngx-doc-viewer>
+          <div class="document-viewer-wrapper">
+            <ngx-doc-viewer
+              [url]="art.article_link"
+              viewer="google"
+              class="doc-viewer">
+            </ngx-doc-viewer>
+          </div>
         }
-
-      } @else {
-
-                <article class="article-content" [innerHTML]="art.content"></article>
-      }
-          } @else {
-            <p class="empty-message">
-        Article not found. <button (click)="goBack()" class="back-button">Go Back</button>
-      </p>
-    }
-  }
+      } @else {
+        <article class="article-content" [innerHTML]="art.content"></article>
+      }
+    } @else {
+      <p class="empty-message">
+        لم يتم العثور على المقال. <button (click)="goBack()" class="back-button">العودة</button>
+      </p>
+    }
+  }
 </div>

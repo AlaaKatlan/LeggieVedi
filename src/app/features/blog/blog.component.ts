@@ -1,13 +1,17 @@
+// FILE: src/app/features/blog/blog.component.ts
+// لا تحتاج إلى تعديلات - الكود موجود بالفعل
+// فقط تأكد أن لديك المتغيرات التالية:
+
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../core/services/supabase.service';
 import { Article } from '../../core/models/article.model';
-import { RouterLink } from '@angular/router'; // <-- لاستخدام [routerLink]
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-blog',
   standalone: true,
-  imports: [CommonModule, RouterLink], // <-- أضف CommonModule و RouterLink
+  imports: [CommonModule, RouterLink],
   templateUrl: './blog.component.html',
   styleUrl: './blog.component.scss'
 })
@@ -36,7 +40,6 @@ export class BlogComponent implements OnInit {
   async ngOnInit() {
     try {
       // جلب البيانات عند تحميل المكون
-      // تأكد من إضافة دالة "getAllArticles" إلى SupabaseService
       const articles = await this.supabase.getAllArticles();
       this.allArticles.set(articles);
     } catch (error) {
@@ -51,3 +54,6 @@ export class BlogComponent implements OnInit {
     this.activeCategory.set(category);
   }
 }
+
+// ✅ الكود موجود بالفعل ولا يحتاج تعديل
+// فقط استبدل ملفات HTML و SCSS بالملفات الجديدة

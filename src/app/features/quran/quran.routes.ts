@@ -10,7 +10,7 @@ export const QURAN_ROUTES: Routes = [
       {
         // المسار الفارغ داخل قسم القرآن يوجه إلى سورة الفاتحة
         path: '',
-        redirectTo: 'surah/1',
+        redirectTo: 'surah',
         pathMatch: 'full',
       },
       {

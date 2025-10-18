@@ -1,25 +1,34 @@
-<!-- حاوية رئيسية -->
+<!-- FILE: src/app/features/quran/surah-list/surah-list.component.html -->
+
 <div class="surah-list-container">
+  <!-- Word Document Buttons -->
   <div class="word-buttons">
-    <button (click)="openDedica()" class="word-btn">
+    <!-- Dedica Button -->
+    <button
+      (click)="openDedica()"
+      class="word-btn"
+      [class.active]="currentViewType() === 'dedica'">
       <i class="fas fa-file-word"></i>
-      Dedica
+      <span>Dedica</span>
     </button>
-    <button (click)="openIntroduzione()" class="word-btn">
+
+    <!-- Introduzione Button -->
+    <button
+      (click)="openIntroduzione()"
+      class="word-btn"
+      [class.active]="currentViewType() === 'introduzione'">
       <i class="fas fa-file-word"></i>
-      Introduzione
+      <span>Introduzione</span>
     </button>
   </div>
-  <!-- شريط البحث والفلاتر -->
+
+  <!-- List Header -->
   <div class="list-header">
-
-    <!-- فلتر البحث -->
-    <!-- <input type="text" placeholder="ابحث عن السورة..." [ngModel]="searchTerm()" (ngModelChange)="onSearch($event)" /> -->
-
-    <!-- فلتر السور -->
     <div class="filter-group">
       <label>Scegli la Sura:</label>
-      <select [ngModel]="selectedSurahId()" (ngModelChange)="onSurahChange($event)">
+      <select
+        [ngModel]="selectedSurahId()"
+        (ngModelChange)="onSurahChange($event)">
         <option [ngValue]="null">Tutti i muri</option>
         <option *ngFor="let surah of filteredSurahs()" [ngValue]="surah.id">
           {{ surah.name_ar }} - {{ surah.name_en }}
@@ -27,33 +36,27 @@
       </select>
     </div>
 
-    <!-- فلتر الآيات -->
     <div class="filter-group">
       <label>Scegli il versetto:</label>
-      <!-- <select [(ngModel)]="selectedAyah">
-        <option [ngValue]="null">كل الآيات</option>
-        <option *ngFor="let ayah of filteredAyahs()" [ngValue]="ayah">
-          {{ ayah }}
-        </option>
-      </select> -->
-      <select [ngModel]="selectedAyah()" (ngModelChange)="onAyahChange($event)">
+      <select
+        [ngModel]="selectedAyah()"
+        (ngModelChange)="onAyahChange($event)">
         <option [ngValue]="null">Tutti i versi</option>
         <option *ngFor="let ayah of filteredAyahs()" [ngValue]="ayah">
           {{ ayah }}
         </option>
       </select>
     </div>
-
-    <!-- زر تغيير الثيم -->
-    <!-- <button class="theme-toggle" (click)="toggleTheme()">
-      <img src="assets/icons/theme.svg" alt="Toggle Theme" />
-    </button> -->
   </div>
 
-  <!-- قائمة السور -->
+  <!-- Surah Navigation List -->
   <nav class="surah-nav">
-    <a *ngFor="let surah of filteredSurahs()" class="surah-link" [routerLink]="['/quran', 'surah', surah.id]"
-      routerLinkActive="active">
+    <a
+      *ngFor="let surah of filteredSurahs()"
+      class="surah-link"
+      [routerLink]="['/quran', 'surah', surah.id]"
+      (click)="onSurahLinkClick(surah.id)"
+      [class.active]="currentViewType() === 'surah' && surah.id === selectedSurahId()">
       <div class="surah-main-info">
         <span class="surah-number">{{ surah.order_number }}</span>
         <div class="surah-names">
@@ -65,7 +68,6 @@
       <div class="surah-meta-info">
         <span class="name-en-translation">{{ surah.name_en_translation }}</span>
         <div class="details">
-          <!-- <span>{{ surah.revelation_place }}</span> -->
           <span class="separator">•</span>
           <span>{{ surah.ayah_count }} Verses</span>
         </div>
