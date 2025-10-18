@@ -18,6 +18,7 @@ export class ArticleDetailComponent implements OnInit {
   @Input() slug!: string;
 
   article = signal<Article | null>(null);
+  loading = signal<boolean>(true); // (إضافة)
 
   async ngOnInit() {
     if (this.slug) {
@@ -27,6 +28,8 @@ export class ArticleDetailComponent implements OnInit {
       } catch (error) {
         console.error("Error fetching article:", error);
         this.article.set(null); // في حالة حدوث خطأ
+      } finally {
+        this.loading.set(false); // (إضافة)
       }
     }
   }

@@ -1,1 +1,42 @@
-<p>blog works!</p>
+<div class="blog-container">
+  <header class="blog-header">
+    <h1>Miscellaneous Writing</h1>
+    <p>مجموعة من النصوص، المقالات، والوجدانيات</p>
+  </header>
+
+  <div class="filter-bar">
+    @for (category of categories(); track category) {
+      <button
+        class="filter-btn"
+        [class.active]="category === activeCategory()"
+        (click)="setFilter(category)">
+        {{ category }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="loading-message">Loading articles...</p>
+  } @else {
+    <div class="articles-list">
+      @for (article of filteredArticles(); track article.id) {
+
+        <a class="article-card" [routerLink]="['/blog', article.slug]">
+          <h3>{{ article.title }}</h3>
+
+          @if (article.excerpt) {
+            <p class="excerpt">{{ article.excerpt }}</p>
+          }
+
+          <div class="card-footer">
+            <span class="category-badge">{{ article.category }}</span>
+            <span class="read-more">Read More →</span>
+          </div>
+        </a>
+
+      } @empty {
+        <p class="empty-message">No articles found for this category.</p>
+      }
+    </div>
+  }
+</div>

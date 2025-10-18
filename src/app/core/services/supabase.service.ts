@@ -135,4 +135,36 @@ export class SupabaseService {
     }
     return data || [];
   }
+
+  async getAllArticles(category?: string): Promise<Article[]> {
+    let query = this.supabase
+      .from('articles') // اسم جدول المقالات
+      .select('*');
+
+    // تطبيق الفلتر إذا لم يكن 'All'
+    if (category && category !== 'All') {
+      query = query.eq('category', category);
+    }
+
+    // ترتيب المقالات من الأحدث للأقدم
+    const { data, error } = await query.order('published_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching all articles:', error);
+      throw error;
+    }
+    return (data as Article[]) || [];
+  }
+  async getAllPublications(): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('publications')
+      .select('*') // <-- يتضمن العمود الجديد
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching publications:', error);
+      throw error;
+    }
+    return data || [];
+  }
 }

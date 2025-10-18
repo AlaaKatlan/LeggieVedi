@@ -1,0 +1,75 @@
+<section class="publication-hero">
+  <div class="hero-content">
+    <h1>المنشورات والترجمات</h1>
+    <p>مجموعة من الأعمال المترجمة والمؤلفات</p>
+    <p class="subtitle">A collection of translated works and publications</p>
+  </div>
+</section>
+
+<div class="publications-container" dir="rtl">
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>جاري تحميل المنشورات...</p>
+    </div>
+  } @else if (publications().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-book-open"></i>
+      <p>لا توجد منشورات متاحة حالياً</p>
+    </div>
+  } @else {
+    <div class="publications-grid">
+      @for (pub of publications(); track pub.id) {
+
+        @if (pub.read_url) {
+          <a [href]="pub.read_url"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="publication-card">
+            <ng-container *ngTemplateOutlet="cardContent; context: {$implicit: pub, hasLink: true}"></ng-container>
+          </a>
+        } @else {
+          <div class="publication-card is-static">
+            <ng-container *ngTemplateOutlet="cardContent; context: {$implicit: pub, hasLink: false}"></ng-container>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>
+
+
+<ng-template #cardContent let-pub let-hasLink="hasLink" dir="rtl">
+  <div class="thumbnail-wrapper">
+    @if (pub.cover_image_url) {
+      <img alt=""
+        [src]="pub.cover_image_url"
+        [alt]="pub.published_title"
+        class="thumbnail"
+        loading="lazy">
+    } @else {
+      <div class="placeholder-icon">
+        <i class="fas fa-book-open"></i>
+        <span>{{ pub.author }}</span>
+      </div>
+    }
+
+    @if (hasLink) {
+      <div class="play-button">
+        <i class="fas fa-external-link-alt"></i> </div>
+      <div class="overlay"></div>
+    }
+  </div>
+
+  <div class="publication-info">
+    <h3>{{ pub.published_title }}</h3> <p class="description">{{ pub.author }}</p> <p class="subtitle">{{ pub.original_title || '---' }}</p> <div class="card-footer">
+      <span>{{ pub.publisher || pub.notes || 'غير محدد' }}</span>
+      @if (hasLink) {
+        <span class="read-button">
+          <span>اقرأ الآن</span>
+          <i class="fas fa-arrow-left"></i>
+        </span>
+      }
+    </div>
+  </div>
+</ng-template>
