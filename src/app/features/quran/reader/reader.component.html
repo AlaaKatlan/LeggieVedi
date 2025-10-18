@@ -111,7 +111,9 @@
 @if (surahInfo(); as surah) {
   <div class="reader-header justify-items-center"  >
     <h1 class="surah-title-ar justify-items-center">{{ surah.name_ar }}</h1>
-    <h2 class="surah-title-en">{{ surah.name_en_translation }}</h2>
+    <h2 class="surah-title-en">{{ surah.name_it }} - {{ surah.name_en_translation }}</h2>
+
+    <h2 class="surah-title-en">{{ surah.name_en }}</h2>
     <div class="surah-details justify-items-center">
 
       <span class="separator">•</span>

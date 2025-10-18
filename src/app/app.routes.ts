@@ -42,9 +42,11 @@ export const routes: Routes = [
         title: 'Artwork Details',
         loadComponent: () => import('./features/gallery/artwork-detail/artwork-detail.component').then(c => c.ArtworkDetailComponent),
       },
-      { path: 'publications',
-         title: 'Publications',
-         loadComponent: () => import('./features/publications/publications.component').then(c => c.PublicationsComponent), },
+      {
+        path: 'publications',
+        title: 'Publications',
+       loadComponent: () => import('./features/publications/publications.component').then(c => c.PublicationsComponent),
+      },
     ]
   },
   { path: '**', redirectTo: '', pathMatch: 'full' }

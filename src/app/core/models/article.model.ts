@@ -31,4 +31,6 @@ export interface Article {
   slug: string;           // الرابط الفريد
   cover_image_url?: string; // صورة غلاف (اختياري)
   created_at: string;
+  is_link: boolean;     // The boolean flag you added
+  article_link?: string; // The URL to the published file
 }

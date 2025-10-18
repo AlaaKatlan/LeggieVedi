@@ -24,7 +24,9 @@
     "@fortawesome/angular-fontawesome": "^0.15.0",
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@supabase/supabase-js": "^2.57.4",
+    "@txtextcontrol/tx-ng-document-editor": "^33.0.0",
     "mammoth": "^1.11.0",
+    "ngx-doc-viewer": "^15.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"

@@ -88,13 +88,21 @@ export class SupabaseService {
   async getArticleBySlug(slug: string): Promise<Article | null> {
     const { data, error } = await this.supabase
       .from('articles')
-      .select('*')
+      // Make sure to select your new columns here
+      .select(`
+      *,
+      is_link,
+      article_link
+    `)
       .eq('slug', slug)
-      .single(); // Use .single() to get one record or null
-    if (error && error.code !== 'PGRST116') {
-      console.error(`Error fetching article with slug ${slug}:`, error);
+      .single();
+
+    if (error) {
+      console.error('Error fetching article by slug:', error);
+      return null;
     }
-    return data;
+
+    return data as Article;
   }
 
   /**
@@ -167,4 +175,5 @@ export class SupabaseService {
     }
     return data || [];
   }
+
 }
