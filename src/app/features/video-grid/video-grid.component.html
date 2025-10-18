@@ -1,0 +1,14 @@
+<div *ngIf="loading">Loading videos...</div>
+
+<div *ngIf="!loading" class="video-grid">
+  <div *ngFor="let video of videos" class="video-card">
+    <h3>{{ video.title }}</h3>
+    <iframe
+      width="300"
+      height="180"
+            [src]="getSafeEmbedUrl(video.url)"
+      frameborder="0"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>

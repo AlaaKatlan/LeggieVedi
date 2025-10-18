@@ -20,7 +20,11 @@ export const routes: Routes = [
         title: 'Art Gallery',
         loadComponent: () => import('./features/gallery/gallery.component').then(c => c.GalleryComponent),
       },
-
+      {
+        path: 'movies',
+        title: 'YouTube Videos',
+        loadComponent: () => import('./features/video-grid/video-grid.component').then(c => c.VideoGridComponent),
+      },
       // --- ترتيب مسارات المدونة الصحيح ---
       {
         path: 'blog', // <-- المسار المحدد يأتي أولاً

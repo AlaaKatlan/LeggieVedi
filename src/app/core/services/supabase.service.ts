@@ -25,8 +25,8 @@ export class SupabaseService {
       .select('*')
       .order('order_number', { ascending: true });
     if (error) {
-        console.error('Error fetching surahs:', error);
-        throw new Error(error.message);
+      console.error('Error fetching surahs:', error);
+      throw new Error(error.message);
     }
     return data || [];
   }
@@ -42,8 +42,8 @@ export class SupabaseService {
       .eq('surah_id', surahId)
       .order('verse_number', { ascending: true });
     if (error) {
-        console.error('Error fetching full surah:', error);
-        throw new Error(error.message);
+      console.error('Error fetching full surah:', error);
+      throw new Error(error.message);
     }
     return data || [];
   }
@@ -120,5 +120,19 @@ export class SupabaseService {
       .order('achievement_date', { ascending: false });
     if (error) throw error;
     return data as Achievement[];
+  }
+
+  // داخل SupabaseService
+  async getAllVideos(): Promise<{ id: number; title: string; url: string }[]> {
+    const { data, error } = await this.supabase
+      .from('videos') // اسم الجدول
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching videos:', error);
+      throw new Error(error.message);
+    }
+    return data || [];
   }
 }
