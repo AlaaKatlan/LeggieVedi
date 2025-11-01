@@ -19,12 +19,15 @@ type TextSegment = string | Footnote;
 })
 // 2. تطبيق OnInit و OnDestroy
 export class ReaderComponent implements OnInit, OnDestroy {
-  // --- Signals (الحالات) ---
+ // --- Signals (الحالات) ---
   ayahs = signal<AyahFull[]>([]);
   surahInfo = signal<Surah | null>(null);
   activeFootnoteText = signal<string | null>(null);
   ayahSearchTerm = signal<string>('');
   selectedAyah = signal<number | null>(null); // هذا سيُستخدم لتلوين الآية المختارة
+  allSurahs = signal<Surah[]>([]); // لتخزين كل السور
+  searchResults = signal<{surah: Surah, ayah: AyahFull}[]>([]); // نتائج البحث الشاملة
+  isSearching = signal<boolean>(false); // حالة البحث
 
   // --- Services (الخدمات) ---
   public bookmarkService = inject(QuranBookmarkService);
@@ -34,6 +37,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
   // --- متغيرات داخلية ---
   private currentSurahId: number | null = null;
   private routeSubscription!: Subscription;
+  private searchTimeout: any = null; // للـ debouncing
+
 
   // 4. إزالة @Input() واستخدام ngOnInit للاستماع للرابط
   ngOnInit(): void {

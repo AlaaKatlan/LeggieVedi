@@ -4,14 +4,12 @@
 
 import { Component, OnInit, inject, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// 1. أضف NavigationEnd
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { Surah } from '../../../core/models/surah.model';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-// 2. أضف filter
 import { filter } from 'rxjs';
 
 @Component({
@@ -23,7 +21,6 @@ import { filter } from 'rxjs';
 })
 export class SurahListComponent implements OnInit {
   @Output() openWord = new EventEmitter<string>();
-  // 3. أضف الـ Output الجديد
   @Output() openReader = new EventEmitter<void>();
 
   supabase = inject(SupabaseService);
@@ -38,10 +35,10 @@ export class SurahListComponent implements OnInit {
 
   currentViewType = signal<'surah' | 'dedica' | 'introduzione' | null>(null);
 
-  // ... (filteredSurahs و filteredAyahs تبقى كما هي) ...
+
 
   filteredSurahs = computed(() => {
-    // ... (no change)
+
     const term = this.searchTerm().toLowerCase().trim();
     const surahs = this.allSurahs();
     if (!term) return surahs;

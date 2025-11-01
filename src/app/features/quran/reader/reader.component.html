@@ -109,18 +109,18 @@
 
 
 @if (surahInfo(); as surah) {
-  <div class="reader-header justify-items-center"  >
-    <h1 class="surah-title-ar justify-items-center">{{ surah.name_ar }}</h1>
-    <h2 class="surah-title-en">{{ surah.name_it }} - {{ surah.name_en_translation }}</h2>
+<div class="reader-header justify-items-center">
+  <h1 class="surah-title-ar justify-items-center">{{ surah.name_ar }}</h1>
+  <h2 class="surah-title-en">{{ surah.name_it }} - {{ surah.name_en_translation }}</h2>
 
-    <h2 class="surah-title-en">{{ surah.name_en }}</h2>
-    <div class="surah-details justify-items-center">
+  <h2 class="surah-title-en">{{ surah.name_en }}</h2>
+  <div class="surah-details justify-items-center">
 
-      <span class="separator">•</span>
-      <span>{{ surah.ayah_count }} Verses</span>
-    </div>
+    <span class="separator">•</span>
+    <span>{{ surah.ayah_count }} Verses</span>
+  </div>
 
-    <div class="ayah-search-container">
+  <!-- <div class="ayah-search-container">
       <input
         type="search"
         placeholder="Cerca il testo dei versetti e l'interpretazione..."
@@ -128,18 +128,31 @@
         [value]="ayahSearchTerm()"
         (input)="onAyahSearch($event)"
       />
+    </div> -->
+
+
+    <div class="ayah-search-container">
+      <input
+        type="search"
+        placeholder="ابحث في كل المصحف... (أدخل 3 أحرف على الأقل)"
+        class="search-input"
+        [value]="ayahSearchTerm()"
+        (input)="onAyahSearch($event)"
+      />
+      @if (isSearching()) {
+        <span class="search-status">جاري البحث في كل المصحف...</span>
+      }
     </div>
-    </div>
+</div>
 }
 
 @if (filteredAyahs().length > 0) {
-  <div class="reader-container">
-    @for (ayah of filteredAyahs(); track ayah.ayah_id) {
-      <div class="ayah-card" [id]="'ayah-' + ayah.verse_number"
-     [class.selected]="ayah.verse_number === selectedAyah()">
-        <div class="ayah-header">
-          <span class="ayah-number">{{ surahInfo()?.order_number }}:{{ ayah.verse_number }}</span>
-          <!-- <button
+<div class="reader-container">
+  @for (ayah of filteredAyahs(); track ayah.ayah_id) {
+  <div class="ayah-card" [id]="'ayah-' + ayah.verse_number" [class.selected]="ayah.verse_number === selectedAyah()">
+    <div class="ayah-header">
+      <span class="ayah-number">{{ surahInfo()?.order_number }}:{{ ayah.verse_number }}</span>
+      <!-- <button
       class="bookmark-btn"
       (click)="bookmarkService.toggleBookmark(ayah.ayah_id)"
       [class.bookmarked]="bookmarkService.isBookmarked(ayah.ayah_id)"
@@ -148,68 +161,70 @@
  <path d="M5 7.8C5 6.11984 5 5.27976 5.32698 4.63803C5.6146 4.07354 6.07354 3.6146 6.63803 3.32698C7.27976 3 8.11984 3 9.8 3H14.2C15.8802 3 16.7202 3 17.362 3.32698C17.9265 3.6146 18.3854 4.07354 18.673 4.63803C19 5.27976 19 6.11984 19 7.8V21L12 17L5 21V7.8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
  </svg>
     </button> -->
-        </div>
+    </div>
 
-        <div class="ayah-content">
-          <p class="arabic-text">{{ ayah.text_uthmani }}</p>
+    <div class="ayah-content">
+      <p class="arabic-text">{{ ayah.text_uthmani }}</p>
 
-          @if (ayah.primary_tafsir; as tafsir) {
-            <div class="primary-tafsir">
-              <p class="interpreter-name">{{ tafsir.interpreter?.display_name_it }}</p>
-              <p>
-                @for (segment of processTextWithFootnotes(tafsir.text, getFootnotesForTafsir(ayah, 'main', tafsir.id)); track $index) {
-                  @if (isFootnote(segment)) {
-                    <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">[{{ segment.pos }}]</button>
-                  } @else {
-                    <span>{{ segment }}</span>
-                  }
-                }
-              </p>
-            </div>
+      @if (ayah.primary_tafsir; as tafsir) {
+      <div class="primary-tafsir">
+        <p class="interpreter-name">{{ tafsir.interpreter?.display_name_it }}</p>
+        <p>
+          @for (segment of processTextWithFootnotes(tafsir.text, getFootnotesForTafsir(ayah, 'main', tafsir.id)); track
+          $index) {
+          @if (isFootnote(segment)) {
+          <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">[{{ segment.pos }}]</button>
+          } @else {
+          <span>{{ segment }}</span>
           }
-
-          @if (ayah.extra_tafsirs.length > 0) {
-            <details class="extra-tafsirs">
-              <summary>Traduzioni alternative</summary>
-              @for (extra of ayah.extra_tafsirs; track extra.id) {
-                <div class="extra-tafsir-item">
-                  <strong>{{ extra.interpreter?.display_name_it }}</strong>
-                  <p>
-                    @for (segment of processTextWithFootnotes(extra.text, getFootnotesForTafsir(ayah, 'extra', extra.id)); track $index) {
-                      @if (isFootnote(segment)) {
-                        <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">[{{ segment.pos }}]</button>
-                      } @else {
-                        <span>{{ segment }}</span>
-                      }
-                    }
-                  </p>
-                </div>
-              }
-            </details>
           }
-        </div>
+        </p>
       </div>
-    }
+      }
+
+      @if (ayah.extra_tafsirs.length > 0) {
+      <details class="extra-tafsirs">
+        <summary>Traduzioni alternative</summary>
+        @for (extra of ayah.extra_tafsirs; track extra.id) {
+        <div class="extra-tafsir-item">
+          <strong>{{ extra.interpreter?.display_name_it }}</strong>
+          <p>
+            @for (segment of processTextWithFootnotes(extra.text, getFootnotesForTafsir(ayah, 'extra', extra.id)); track
+            $index) {
+            @if (isFootnote(segment)) {
+            <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">[{{ segment.pos }}]</button>
+            } @else {
+            <span>{{ segment }}</span>
+            }
+            }
+          </p>
+        </div>
+        }
+      </details>
+      }
+    </div>
   </div>
+  }
+</div>
 } @else {
-  <div class="loader">
-    @if(ayahs().length > 0 && filteredAyahs().length === 0) {
-      <span>Non ci sono risultati corrispondenti alla tua ricerca.</span>
-    } @else {
-      <span>Caricamento della sura...</span>
-    }
-  </div>
+<div class="loader">
+  @if(ayahs().length > 0 && filteredAyahs().length === 0) {
+  <span>Non ci sono risultati corrispondenti alla tua ricerca.</span>
+  } @else {
+  <span>Caricamento della sura...</span>
+  }
+</div>
 }
 
 @if (activeFootnoteText(); as noteText) {
-  <div class="footnote-backdrop" (click)="closeFootnote()"></div>
-  <div class="footnote-popover" (click)="$event.stopPropagation()">
-    <div class="popover-header">
-      <h3>Spiegazione e chiarimento</h3>
-      <button class="close-btn" (click)="closeFootnote()">&times;</button>
-    </div>
-    <div class="popover-content">
-      <p>{{ noteText }}</p>
-    </div>
+<div class="footnote-backdrop" (click)="closeFootnote()"></div>
+<div class="footnote-popover" (click)="$event.stopPropagation()">
+  <div class="popover-header">
+    <h3>Spiegazione e chiarimento</h3>
+    <button class="close-btn" (click)="closeFootnote()">&times;</button>
   </div>
+  <div class="popover-content">
+    <p>{{ noteText }}</p>
+  </div>
+</div>
 }

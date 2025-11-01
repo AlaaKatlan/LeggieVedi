@@ -32,6 +32,11 @@ export class QuranLayoutComponent {
         this.showReader();
       }
     });
+
+      // عند التحميل الأول، افتح Dedica افتراضيًا
+    if (this.router.url === '/quran' || this.router.url === '/quran/') {
+      setTimeout(() => this.showWord('Dedica'), 0);
+    }
   }
   showReader() {
     this.currentComponent.set('reader');
