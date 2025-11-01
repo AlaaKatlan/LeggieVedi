@@ -106,61 +106,62 @@
 
 
  -->
-
-
 @if (surahInfo(); as surah) {
 <div class="reader-header justify-items-center">
   <h1 class="surah-title-ar justify-items-center">{{ surah.name_ar }}</h1>
   <h2 class="surah-title-en">{{ surah.name_it }} - {{ surah.name_en_translation }}</h2>
-
   <h2 class="surah-title-en">{{ surah.name_en }}</h2>
   <div class="surah-details justify-items-center">
-
     <span class="separator">•</span>
     <span>{{ surah.ayah_count }} Verses</span>
   </div>
 
-  <!-- <div class="ayah-search-container">
-      <input
-        type="search"
-        placeholder="Cerca il testo dei versetti e l'interpretazione..."
-        class="search-input"
-        [value]="ayahSearchTerm()"
-        (input)="onAyahSearch($event)"
-      />
-    </div> -->
-
-
-    <div class="ayah-search-container">
-      <input
-        type="search"
-        placeholder="ابحث في كل المصحف... (أدخل 3 أحرف على الأقل)"
-        class="search-input"
-        [value]="ayahSearchTerm()"
-        (input)="onAyahSearch($event)"
-      />
-      @if (isSearching()) {
-        <span class="search-status">جاري البحث في كل المصحف...</span>
-      }
-    </div>
+  <div class="ayah-search-container">
+    <input
+      type="search"
+      placeholder="ابحث في كل المصحف... (أدخل 3 أحرف على الأقل)"
+      class="search-input"
+      [value]="ayahSearchTerm()"
+      (input)="onAyahSearch($event)"
+    />
+    @if (isSearching()) {
+      <span class="search-status">جاري البحث في كل المصحف...</span>
+    }
+  </div>
 </div>
 }
 
-@if (filteredAyahs().length > 0) {
+<!-- نتائج البحث الشاملة -->
+@if (searchResults().length > 0) {
+  <div class="search-results-container">
+    <div class="search-results-header">
+      <h3>نتائج البحث: {{ searchResults().length }} نتيجة</h3>
+      <button class="clear-search-btn" (click)="clearSearch()">
+        <i class="fas fa-times"></i> مسح البحث
+      </button>
+    </div>
+
+    <div class="search-results-list">
+      @for (result of searchResults(); track result.ayah.ayah_id) {
+        <div class="search-result-item" (click)="navigateToAyah(result.surah.id, result.ayah.verse_number)">
+          <div class="result-header">
+            <span class="surah-name">{{ result.surah.name_ar }} - {{ result.surah.name_it }}</span>
+            <span class="ayah-number">{{ result.surah.order_number }}:{{ result.ayah.verse_number }}</span>
+          </div>
+          <p class="result-text">{{ result.ayah.text_uthmani }}</p>
+          <p class="result-translation">
+            {{ result.ayah.primary_tafsir?.text?.substring(0, 150) || '' }}...
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+} @else if (filteredAyahs().length > 0) {
 <div class="reader-container">
   @for (ayah of filteredAyahs(); track ayah.ayah_id) {
   <div class="ayah-card" [id]="'ayah-' + ayah.verse_number" [class.selected]="ayah.verse_number === selectedAyah()">
     <div class="ayah-header">
       <span class="ayah-number">{{ surahInfo()?.order_number }}:{{ ayah.verse_number }}</span>
-      <!-- <button
-      class="bookmark-btn"
-      (click)="bookmarkService.toggleBookmark(ayah.ayah_id)"
-      [class.bookmarked]="bookmarkService.isBookmarked(ayah.ayah_id)"
-      title="Add to bookmarks">
-     <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
- <path d="M5 7.8C5 6.11984 5 5.27976 5.32698 4.63803C5.6146 4.07354 6.07354 3.6146 6.63803 3.32698C7.27976 3 8.11984 3 9.8 3H14.2C15.8802 3 16.7202 3 17.362 3.32698C17.9265 3.6146 18.3854 4.07354 18.673 4.63803C19 5.27976 19 6.11984 19 7.8V21L12 17L5 21V7.8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
- </svg>
-    </button> -->
     </div>
 
     <div class="ayah-content">
