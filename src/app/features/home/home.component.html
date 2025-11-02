@@ -7,7 +7,7 @@
           نبيل رضا المهايني
         </h1>
         <h1 class="hero-title">
-        Nabil Al-Mahaini
+          Nabil Al-Mahaini
         </h1>
         <p class="hero-subtitle">
           مخرج، مترجم، كاتب ورسام من دمشق
@@ -21,6 +21,11 @@
 
       <div class="hero-image">
         <img src="assets/image/nabil.jpg" alt="صورة نبيل رضا المهايني">
+        <div class="image-caption">
+          <p dir="rtl">أمام
+            جدارية صممها نبيل في نمانينات القرن الماضي موجودة في قاعة الملك فيصل في مقر منظمة الأمم المتحدة للأغذية
+            والزراعة - FAO- في روما</p>
+        </div>
         <div class="social-icons">
           <a href="https://www.youtube.com/@nabilmahayni8398" title="Youtube" target="_blank"><i
               class="fa-brands fa-youtube"></i></a>
@@ -40,19 +45,27 @@
   <section id="about" class="home-section about-section">
     <div class="about-content">
       <h2 class="section-title">نبذة</h2>
-      <div class="about-content">
+      <div class="about-content" dir="rtl">
         <p>
-          من مواليد دمشق عام 1944، درس في إيطاليا ما بين 1963-1986 حيث تخرج من أكاديمية الفنون الجميلة في فلورنسا
-          (تخصص ديكور مسرح) وجامعة الدراسات الاجتماعية في روما (إخراج تلفزيوني وسينمائي).
+
+
+
+          من مواليد دمشق عام 1944، درس وأقام في إيطاليا ما بين 1963 و1986،
+           حيث تخرّج من أكاديمية الفنون الجميلة في فلورنسا (تخصص ديكور مسرح)
+            وجامعة الدراسات الاجتماعية في روما (تخصص إخراج تلفزيوني وسينمائي).
           <br><br>
           مسيرته المهنية الطويلة شملت العمل خبيراً في الصندوق الدولي للتنمية الزراعية (IFAD) منذ 1983،
           وإخراج أكثر من 185 فيلماً وثائقياً، ونشر حوالي 40 كتاباً أدبياً معظمها مترجم عن الإيطالية.
           كما عمل مساعداً للمخرج الإيطالي الشهير بيير باولو بازوليني وصحافياً ومراسلاً في روما.
+
+
+
+
         </p>
       </div>
     </div>
   </section>
-
+  <!--
   <section class="home-section">
     <h2 class="section-title">أحدث المقالات</h2>
     <div class="grid" [ngClass]="{'single-article': latestArticles().length === 1}">
@@ -65,9 +78,9 @@
     <div class="section-link">
       <a routerLink="/blog">عرض كل المقالات ←</a>
     </div>
-  </section>
+  </section> -->
 
-  <section class="home-section">
+  <!-- <section class="home-section">
     <h2 class="section-title">أعمال فنية مختارة</h2>
     <div class="gallery-grid">
       @for (art of featuredArtworks(); track art.id) {
@@ -84,14 +97,14 @@
     <div class="section-link">
       <a routerLink="/gallery">تصفح المعرض الكامل ←</a>
     </div>
-  </section>
+  </section> -->
 
   <section class="home-section">
     <h2 class="section-title">محطات في المسيرة المهنية</h2>
     <div class="timeline">
       <div class="timeline-item">
         <div class="timeline-icon"></div>
-        <div class="timeline-content"  >
+        <div class="timeline-content">
           <span class="timeline-date">1983 - الآن</span>
           <h3 class="timeline-title">خبير في الصندوق الدولي للتنمية الزراعية (IFAD)</h3>
           <p class="timeline-description">في روما ثم دمشق، متخصص في الإعلام، الاتصالات، والإشراف على المشاريع، والترجمة.
@@ -103,8 +116,7 @@
         <div class="timeline-content">
           <span class="timeline-date">مخرج ومستشار</span>
           <h3 class="timeline-title">إخراج أفلام وإدارة منظمات</h3>
-          <p class="timeline-description">أخرجت أكثر من 150 فيلماً للتلفزيون السوري وعملت مديراً لمنظمة The Worldview
-            International.</p>
+          <p class="timeline-description">أخرج أكثر من 150 فيلمًا للتلفزيون السوري، وعمل مديرًا لمنظمة The Worldview International.</p>
         </div>
       </div>
       <div class="timeline-item">
@@ -112,8 +124,9 @@
         <div class="timeline-content">
           <span class="timeline-date">تجارب سينمائية وصحفية</span>
           <h3 class="timeline-title">مساعد للمخرج بازوليني وصحفي في روما</h3>
-          <p class="timeline-description">عملت كمساعد للمخرج الكبير بيير باولو بازوليني، ومراسل لعدة مجلات عربية من
-            روما.</p>
+          <p class="timeline-description">
+      عمل كمساعد للمخرج الكبير بيير باولو بازوليني، ومراسلًا لعدد من المجلات العربية من روما.
+          </p>
         </div>
       </div>
       <div class="timeline-item">
@@ -121,8 +134,9 @@
         <div class="timeline-content">
           <span class="timeline-date">1971 - 1967</span>
           <h3 class="timeline-title">التحصيل العلمي في إيطاليا</h3>
-          <p class="timeline-description">تخرجت من أكاديمية الفنون الجميلة في فلورنسا (ديكور مسرح) ثم من جامعة الدراسات
-            الاجتماعية في روما (إخراج).</p>
+          <p class="timeline-description">
+      تخرّج من أكاديمية الفنون الجميلة في فلورنسا (ديكور مسرح)، ثم من جامعة الدراسات الاجتماعية في روما (إخراج تلفزيوني وسينمائي).
+          </p>
         </div>
       </div>
     </div>
@@ -191,34 +205,34 @@
   </section>
 </div>
 
-  <!-- CONTACT CARD -->
-  <section class="home-section" dir="rtl">
-    <h2 class="section-title">التواصل</h2>
-    <div class="contact-card">
-      <div class="contact-item">
-        <i class="fas fa-phone"></i>
-        <div class="contact-info">
-          <h4>الهاتف</h4>
-          <p><a href="tel:+963118881123" dir="ltr">+963 11 8881123</a></p>
-        </div>
-      </div>
-      <div class="contact-item">
-        <i class="fas fa-mobile-alt"></i>
-        <div class="contact-info">
-          <h4>الجوال</h4>
-          <p><a href="tel:+963944337838"  dir="ltr">+963 944337838</a></p>
-        </div>
-      </div>
-      <div class="contact-item">
-        <i class="fas fa-envelope"></i>
-        <div class="contact-info">
-          <h4>البريد الإلكتروني</h4>
-          <p>
-            <a href="mailto:mahaininabil@gmail.com">{{"mahaininabil@gmail.com"}}</a>
-            <br>
-            <a href="mailto:n.mahaini@ifad.org">{{"n.mahaini@ifad.org"}}</a>
-          </p>
-        </div>
+<!-- CONTACT CARD -->
+<section class="home-section" dir="rtl">
+  <h2 class="section-title">التواصل</h2>
+  <div class="contact-card">
+    <div class="contact-item">
+      <i class="fas fa-phone"></i>
+      <div class="contact-info">
+        <h4>الهاتف</h4>
+        <p><a href="tel:+963118881123" dir="ltr">+963 11 8881123</a></p>
       </div>
     </div>
-  </section>
+    <div class="contact-item">
+      <i class="fas fa-mobile-alt"></i>
+      <div class="contact-info">
+        <h4>الجوال</h4>
+        <p><a href="tel:+963944337838" dir="ltr">+963 944337838</a></p>
+      </div>
+    </div>
+    <div class="contact-item">
+      <i class="fas fa-envelope"></i>
+      <div class="contact-info">
+        <h4>البريد الإلكتروني</h4>
+        <p>
+          <a href="mailto:mahaininabil@gmail.com">{{"mahaininabil@gmail.com"}}</a>
+          <br>
+          <a href="mailto:n.mahaini@ifad.org">{{"n.mahaini@ifad.org"}}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

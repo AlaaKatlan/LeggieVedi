@@ -44,6 +44,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   private currentSurahId: number | null = null;
   private routeSubscription!: Subscription;
   private searchTimeout: any = null;
+  private searchCache = new Map<string, {surah: Surah, ayah: AyahFull}[]>(); // Cache للبحث
 
   // ============================================
   // LIFECYCLE HOOKS
@@ -181,48 +182,76 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * البحث في كل سور المصحف
+   * البحث في كل سور المصحف (نسخة بسيطة ومضمونة)
    */
   async searchInAllSurahs(term: string): Promise<void> {
+    console.log('🔍 بدء البحث عن:', term);
+
+    // التحقق من الـ Cache أولاً
+    if (this.searchCache.has(term)) {
+      console.log('✅ وجدت في Cache');
+      this.searchResults.set(this.searchCache.get(term)!);
+      return;
+    }
+
     this.isSearching.set(true);
     this.searchResults.set([]);
 
     try {
-      // جلب جميع السور إذا لم تكن محملة
+      // جلب جميع السور
       if (this.allSurahs().length === 0) {
+        console.log('📥 جاري تحميل السور...');
         const surahs = await this.supabase.getAllSurahs();
         this.allSurahs.set(surahs);
+        console.log('✅ تم تحميل', surahs.length, 'سورة');
       }
 
       const results: {surah: Surah, ayah: AyahFull}[] = [];
+      let processedCount = 0;
 
-      // البحث في كل سورة
+      // البحث سورة بسورة
       for (const surah of this.allSurahs()) {
-        const ayahs = await this.supabase.getFullSurah(surah.id);
+        if (results.length >= 50) break;
 
-        for (const ayah of ayahs) {
-          const inArabic = ayah.text_clean.includes(term);
-          const inTafsir = ayah.primary_tafsir?.text.toLowerCase().includes(term) ?? false;
+        try {
+          const ayahs = await this.supabase.getFullSurah(surah.id);
+          processedCount++;
 
-          if (inArabic || inTafsir) {
-            results.push({ surah, ayah });
+          for (const ayah of ayahs) {
+            // بحث شامل في كل الحقول
+            const searchInUthmani = ayah.text_uthmani?.includes(term) || false;
+            const searchInClean = ayah.text_clean?.includes(term) || false;
+            const searchInTafsir = ayah.primary_tafsir?.text?.toLowerCase().includes(term.toLowerCase()) || false;
 
-            // للحد من عدد النتائج وتحسين الأداء (100 نتيجة كحد أقصى)
-            if (results.length >= 100) {
-              break;
+            if (searchInUthmani || searchInClean || searchInTafsir) {
+              results.push({ surah, ayah });
+
+              // تحديث النتائج تدريجياً كل 5 نتائج
+              if (results.length % 5 === 0) {
+                this.searchResults.set([...results]);
+                console.log(`📊 ${results.length} نتيجة من ${processedCount} سورة`);
+              }
+
+              if (results.length >= 50) break;
             }
           }
-        }
-
-        // توقف إذا وصلنا لـ 100 نتيجة
-        if (results.length >= 100) {
-          break;
+        } catch (err) {
+          console.error(`❌ خطأ في سورة ${surah.name_ar}:`, err);
         }
       }
 
-      this.searchResults.set(results);
+      // التحديث النهائي
+      this.searchResults.set([...results]);
+
+      // حفظ في Cache
+      if (results.length > 0) {
+        this.searchCache.set(term, results);
+      }
+
+      console.log('✅ انتهى البحث - النتائج:', results.length);
+
     } catch (error) {
-      console.error('Error searching in all surahs:', error);
+      console.error('❌ خطأ في البحث:', error);
     } finally {
       this.isSearching.set(false);
     }
@@ -242,6 +271,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.ayahSearchTerm.set('');
     this.searchResults.set([]);
     this.isSearching.set(false);
+    // لا نمسح الـ Cache لإعادة استخدامه لاحقاً
 
     // العودة لعرض السورة الحالية
     if (this.currentSurahId) {

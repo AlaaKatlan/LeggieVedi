@@ -175,5 +175,90 @@ export class SupabaseService {
     }
     return data || [];
   }
+  // أضف هذه الدالة إلى ملف supabase.service.ts
+
+  /**
+   * البحث السريع في كل المصحف من جهة الخادم
+   * هذه الطريقة أسرع بكثير من البحث في المتصفح
+   */
+  async searchInQuran(searchTerm: string, limit: number = 50): Promise<any[]> {
+    try {
+      // البحث في النص العربي
+      const { data: arabicResults, error: arabicError } = await this.supabase
+        .from('v_ayah_full')
+        .select(`
+        ayah_id,
+        surah_id,
+        verse_number,
+        text_uthmani,
+        text_clean,
+        primary_tafsir,
+        extra_tafsirs,
+        footnotes,
+        surahs!inner (
+          id,
+          name_ar,
+          name_en,
+          name_it,
+          order_number,
+          ayah_count,
+          revelation_place,
+          name_en_translation
+        )
+      `)
+        .ilike('text_clean', `%${searchTerm}%`)
+        .limit(limit);
+
+      if (arabicError) throw arabicError;
+
+      // البحث في التفسير
+      const { data: tafsirResults, error: tafsirError } = await this.supabase
+        .from('v_ayah_full')
+        .select(`
+        ayah_id,
+        surah_id,
+        verse_number,
+        text_uthmani,
+        text_clean,
+        primary_tafsir,
+        extra_tafsirs,
+        footnotes,
+        surahs!inner (
+          id,
+          name_ar,
+          name_en,
+          name_it,
+          order_number,
+          ayah_count,
+          revelation_place,
+          name_en_translation
+        )
+      `)
+        .ilike('primary_tafsir->text', `%${searchTerm}%`)
+        .limit(limit);
+
+      if (tafsirError) throw tafsirError;
+
+      // دمج النتائج وإزالة المكررات
+      const allResults = [...(arabicResults || []), ...(tafsirResults || [])];
+      const uniqueResults = Array.from(
+        new Map(allResults.map(item => [item.ayah_id, item])).values()
+      );
+
+      // ترتيب النتائج حسب السورة والآية
+      return uniqueResults
+        .sort((a, b) => {
+          if (a.surah_id !== b.surah_id) {
+            return a.surah_id - b.surah_id;
+          }
+          return a.verse_number - b.verse_number;
+        })
+        .slice(0, limit);
+
+    } catch (error) {
+      console.error('Error searching in Quran:', error);
+      throw error;
+    }
+  }
 
 }
