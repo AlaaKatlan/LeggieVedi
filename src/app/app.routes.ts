@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { ADMIN_ROUTES } from './features/admin/admin.routes';
 
 export const routes: Routes = [
   {
@@ -47,6 +48,10 @@ export const routes: Routes = [
         title: 'Publications',
        loadComponent: () => import('./features/publications/publications.component').then(c => c.PublicationsComponent),
       },
+ {
+  path: 'admin',
+  loadChildren: () => import('./features/admin/admin.routes').then(r => r.ADMIN_ROUTES)
+}
     ]
   },
   { path: '**', redirectTo: '', pathMatch: 'full' }

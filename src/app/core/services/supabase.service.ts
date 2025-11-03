@@ -261,4 +261,35 @@ export class SupabaseService {
     }
   }
 
+async createVideo(video: { title: string; url: string; description?: string }): Promise<any> {
+  const { data, error } = await (this.supabase as any).supabase
+    .from('videos')
+    .insert(video)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+async updateVideo(id: number, updates: any): Promise<any> {
+  const { data, error } = await (this.supabase as any).supabase
+    .from('videos')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+async deleteVideo(id: number): Promise<void> {
+  const { error } = await (this.supabase as any).supabase
+    .from('videos')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+}
 }
