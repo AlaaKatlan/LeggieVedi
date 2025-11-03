@@ -46,12 +46,12 @@ export const routes: Routes = [
       {
         path: 'publications',
         title: 'Publications',
-       loadComponent: () => import('./features/publications/publications.component').then(c => c.PublicationsComponent),
+        loadComponent: () => import('./features/publications/publications.component').then(c => c.PublicationsComponent),
       },
- {
-  path: 'admin',
-  loadChildren: () => import('./features/admin/admin.routes').then(r => r.ADMIN_ROUTES)
-}
+      {
+        path: 'admin',
+        loadChildren: () => import('./features/admin/admin.routes').then(r => r.ADMIN_ROUTES)
+      }
     ]
   },
   { path: '**', redirectTo: '', pathMatch: 'full' }

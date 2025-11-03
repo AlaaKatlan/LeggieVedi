@@ -1,3 +1,4 @@
+<!-- src/app/features/video-grid/video-grid.component.html -->
 
 <!-- Hero Section -->
 <section class="video-hero">
@@ -10,20 +11,39 @@
 
 <!-- Main Container -->
 <div class="video-container">
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <button
+      class="filter-btn"
+      [class.active]="activeCategory() === null"
+      (click)="setFilter(null)">
+      All Categories - كل الفئات
+    </button>
+
+    @for (category of allCategories(); track category.id) {
+      <button
+        class="filter-btn"
+        [class.active]="activeCategory() === category.id"
+        (click)="setFilter(category.id)">
+        {{ category.categories_ar }} - {{ category.categories_en }}
+      </button>
+    }
+  </div>
+
   @if (loading()) {
     <div class="loading-state">
       <div class="spinner"></div>
       <p>جاري تحميل الأفلام...</p>
     </div>
-  } @else if (videos().length === 0) {
+  } @else if (filteredVideos().length === 0) {
     <div class="empty-state">
       <i class="fas fa-video"></i>
-      <p>لا توجد أفلام متاحة حالياً</p>
+      <p>لا توجد أفلام في هذه الفئة</p>
     </div>
   } @else {
     <!-- Video Grid -->
     <div class="videos-grid">
-      @for (video of videos(); track video.id) {
+      @for (video of filteredVideos(); track video.id) {
         <div class="video-card" (click)="openVideo(video)">
           <!-- Thumbnail -->
           <div class="thumbnail-wrapper">
@@ -31,18 +51,26 @@
               [src]="video.thumbnail"
               [alt]="video.title"
               class="thumbnail"
-              loading="lazy">
+              loading="lazy"
+              (error)="onImageError($event, video)">
             <div class="play-button">
               <i class="fas fa-play"></i>
             </div>
             <div class="overlay"></div>
+
+            <!-- Category Badge -->
+            @if (video.videos_categories) {
+              <div class="category-badge">
+                {{ video.videos_categories.categories_ar }}
+              </div>
+            }
           </div>
 
           <!-- Video Info -->
           <div class="video-info">
             <h3>{{ video.title }}</h3>
-            @if (video.description) {
-              <p class="description">{{ video.description }}</p>
+            @if (video.title_en) {
+              <p class="title-en">{{ video.title_en }}</p>
             }
             <div class="watch-button">
               <span>شاهد الآن</span>
@@ -65,7 +93,12 @@
     <div class="modal-content">
       <!-- Header -->
       <div class="modal-header">
-        <h2>{{ video.title }}</h2>
+        <div class="modal-title-section">
+          <h2>{{ video.title }}</h2>
+          @if (video.title_en) {
+            <p class="subtitle">{{ video.title_en }}</p>
+          }
+        </div>
         <button class="close-btn" (click)="closeVideo()">
           <i class="fas fa-times"></i>
         </button>
@@ -78,14 +111,17 @@
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
-          title="{{ video.title }}">
+          [title]="video.title">
         </iframe>
       </div>
 
-      <!-- Description -->
-      @if (video.description) {
-        <div class="modal-description">
-          {{ video.description }}
+      <!-- Category Info -->
+      @if (video.videos_categories) {
+        <div class="modal-category">
+          <span class="category-label">الفئة:</span>
+          <span class="category-value">
+            {{ video.videos_categories.categories_ar }} - {{ video.videos_categories.categories_en }}
+          </span>
         </div>
       }
     </div>

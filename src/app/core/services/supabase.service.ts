@@ -130,19 +130,50 @@ export class SupabaseService {
     return data as Achievement[];
   }
 
-  // داخل SupabaseService
-  async getAllVideos(): Promise<{ id: number; title: string; url: string }[]> {
-    const { data, error } = await this.supabase
-      .from('videos') // اسم الجدول
-      .select('*')
-      .order('id', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching videos:', error);
-      throw new Error(error.message);
-    }
-    return data || [];
+  /**
+   * جلب جميع الفيديوهات مع معلومات الفئات
+   */
+  /**
+ * جلب جميع الفيديوهات مع معلومات الفئات
+ */
+async getAllVideos(): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('videos')
+    .select(`
+      *,
+      videos_categories (
+        id,
+        categories_ar,
+        categories_en
+      )
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching videos:', error);
+    throw new Error(error.message);
   }
+  return data || [];
+}
+
+/**
+ * جلب جميع فئات الفيديوهات
+ */
+async getVideoCategories(): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('videos_categories')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching video categories:', error);
+    throw new Error(error.message);
+  }
+  return data || [];
+}
+
+
 
   async getAllArticles(category?: string): Promise<Article[]> {
     let query = this.supabase
@@ -261,35 +292,35 @@ export class SupabaseService {
     }
   }
 
-async createVideo(video: { title: string; url: string; description?: string }): Promise<any> {
-  const { data, error } = await (this.supabase as any).supabase
-    .from('videos')
-    .insert(video)
-    .select()
-    .single();
+  async createVideo(video: { title: string; url: string; description?: string }): Promise<any> {
+    const { data, error } = await (this.supabase as any).supabase
+      .from('videos')
+      .insert(video)
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
-}
+    if (error) throw error;
+    return data;
+  }
 
-async updateVideo(id: number, updates: any): Promise<any> {
-  const { data, error } = await (this.supabase as any).supabase
-    .from('videos')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single();
+  async updateVideo(id: number, updates: any): Promise<any> {
+    const { data, error } = await (this.supabase as any).supabase
+      .from('videos')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data;
-}
+    if (error) throw error;
+    return data;
+  }
 
-async deleteVideo(id: number): Promise<void> {
-  const { error } = await (this.supabase as any).supabase
-    .from('videos')
-    .delete()
-    .eq('id', id);
+  async deleteVideo(id: number): Promise<void> {
+    const { error } = await (this.supabase as any).supabase
+      .from('videos')
+      .delete()
+      .eq('id', id);
 
-  if (error) throw error;
-}
+    if (error) throw error;
+  }
 }
