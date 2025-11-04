@@ -6,11 +6,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AdminService } from '../../../core/services/admin.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { Article } from '../../../core/models/article.model';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
   selector: 'app-article-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CKEditorModule],
   template: `
     <div class="article-editor">
       <div class="editor-header">
@@ -154,7 +156,11 @@ import { Article } from '../../../core/models/article.model';
               required
             />
           </div>
-
+<!-- <ckeditor
+  [editor]="Editor"
+  [(ngModel)]="formData.content"
+  name="content">
+</ckeditor> -->
           <!-- Submit Buttons -->
           <div class="form-actions">
             <button type="button" (click)="goBack()" class="btn-secondary">
@@ -408,6 +414,7 @@ export class ArticleEditorComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private adminService = inject(AdminService);
   private supabaseService = inject(SupabaseService);
+public Editor = ClassicEditor;
 
   loading = signal(true);
   saving = signal(false);
