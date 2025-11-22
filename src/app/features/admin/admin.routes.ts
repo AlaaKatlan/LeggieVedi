@@ -54,9 +54,12 @@ export const ADMIN_ROUTES: Routes = [
         path: 'publications',
         loadComponent: () => import('./publications-manager/publications-manager.component').then(c => c.PublicationsManagerComponent)
       },
+      // في admin.routes.ts
       {
         path: 'quran',
-        loadComponent: () => import('./surah-manager/surah-manager.component').then(c => c.SurahManagerComponent)
+        loadChildren: () =>
+          import('./quran-manager/quran-admin.routes')
+            .then(r => r.QURAN_ADMIN_ROUTES)
       }
     ]
   }
