@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../../../../core/services/supabase.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.model';
+import { Surah, SurahFootnote } from '../../../../core/models/surah.model';
 
 @Component({
   selector: 'app-surahs-manager',
@@ -22,6 +22,18 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
         </button>
       </div>
 
+      <!-- Search -->
+      <div class="search-bar">
+        <input
+          type="search"
+          placeholder="بحث في السور..."
+          [(ngModel)]="searchTerm"
+          (input)="filterSurahs()"
+          class="search-input"
+        />
+        <span class="results-count">{{ filteredSurahs().length }} من {{ surahs().length }}</span>
+      </div>
+
       <!-- Loading -->
       @if (loading()) {
         <div class="loading-state">
@@ -31,13 +43,18 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
       } @else {
         <!-- Surahs List -->
         <div class="surahs-list">
-          @for (surah of surahs(); track surah.id) {
+          @for (surah of filteredSurahs(); track surah.id) {
             <div class="surah-card">
               <div class="surah-header">
                 <div class="surah-number">{{ surah.order_number }}</div>
                 <div class="surah-names">
                   <h3>{{ surah.name_ar }}</h3>
-                  <p class="name-en">{{ surah.name_it }} - {{ surah.name_en }}</p>
+                  <p class="name-translations">
+                    {{ surah.name_it }} • {{ surah.name_en }}
+                    @if (surah.name_en_translation) {
+                      <span class="translation">({{ surah.name_en_translation }})</span>
+                    }
+                  </p>
                 </div>
                 <button (click)="editSurah(surah)" class="btn-icon">
                   <i class="fas fa-edit"></i>
@@ -49,14 +66,14 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
                   <i class="fas fa-align-right"></i>
                   {{ surah.ayah_count }} آية
                 </span>
-                <span class="meta-item">
+                <!-- <span class="meta-item">
                   <i class="fas fa-map-marker-alt"></i>
-                  {{ surah.revelation_place }}
-                </span>
-                @if (surah.other_names && surah.other_names.length > 0) {
+                  {{ surah.revelation_place === 'Mecca' ? 'مكية' : 'مدنية' }}
+                </span> -->
+                @if (surah.name_footnotes && surah.name_footnotes.length > 0) {
                   <span class="meta-item">
-                    <i class="fas fa-tags"></i>
-                    {{ surah.other_names.length }} أسماء أخرى
+                    <i class="fas fa-sticky-note"></i>
+                    {{ surah.name_footnotes.length }} حواشي
                   </span>
                 }
               </div>
@@ -84,12 +101,36 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
 
             <div class="form-row">
               <div class="form-group">
+                <label>رقم السورة</label>
+                <input
+                  type="number"
+                  [(ngModel)]="formData.order_number"
+                  name="order_number"
+                  readonly
+                  disabled
+                />
+              </div>
+              <div class="form-group">
+                <label>عدد الآيات</label>
+                <input
+                  type="number"
+                  [(ngModel)]="formData.ayah_count"
+                  name="ayah_count"
+                  readonly
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
                 <label>الاسم بالعربية</label>
                 <input
                   type="text"
                   [(ngModel)]="formData.name_ar"
                   name="name_ar"
                   required
+                  class="arabic-input"
                 />
               </div>
 
@@ -121,53 +162,18 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
                   type="text"
                   [(ngModel)]="formData.name_en_translation"
                   name="name_en_translation"
+                  placeholder="The Opening"
                 />
               </div>
             </div>
-          </div>
 
-          <!-- Other Names -->
-          <div class="form-section">
-            <div class="section-header-flex">
-              <h4>الأسماء الأخرى</h4>
-              <button type="button" (click)="addOtherName()" class="btn-add-small">
-                <i class="fas fa-plus"></i>
-                إضافة اسم
-              </button>
+            <div class="form-group">
+              <label>مكان النزول</label>
+              <select [(ngModel)]="formData.revelation_place" name="revelation_place">
+                <option value="Mecca">مكة</option>
+                <option value="Medina">المدينة</option>
+              </select>
             </div>
-
-            @if (formData.other_names && formData.other_names.length > 0) {
-              <div class="other-names-list">
-                @for (name of formData.other_names; track $index; let i = $index) {
-                  <div class="other-name-item">
-                    <div class="form-row">
-                      <div class="form-group">
-                        <label>الاسم</label>
-                        <input
-                          type="text"
-                          [(ngModel)]="name.name"
-                          [name]="'other_name_' + i"
-                        />
-                      </div>
-                      <div class="form-group">
-                        <label>المعنى</label>
-                        <input
-                          type="text"
-                          [(ngModel)]="name.meaning"
-                          [name]="'other_meaning_' + i"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        (click)="removeOtherName(i)"
-                        class="btn-remove">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
           </div>
 
           <!-- Name Footnotes -->
@@ -184,21 +190,24 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
               <div class="footnotes-list">
                 @for (footnote of formData.name_footnotes; track $index; let i = $index) {
                   <div class="footnote-item">
-                    <div class="form-row">
-                      <div class="form-group" style="flex: 1;">
-                        <label>النص المرجعي</label>
-                        <input
-                          type="text"
-                          [(ngModel)]="footnote.ref"
-                          [name]="'footnote_ref_' + i"
-                        />
-                      </div>
+                    <div class="footnote-header">
+                      <span class="footnote-number">{{ i + 1 }}</span>
                       <button
                         type="button"
                         (click)="removeNameFootnote(i)"
-                        class="btn-remove">
+                        class="btn-remove-small">
                         <i class="fas fa-trash"></i>
                       </button>
+                    </div>
+
+                    <div class="form-group">
+                      <label>النص المرجعي</label>
+                      <input
+                        type="text"
+                        [(ngModel)]="footnote.ref"
+                        [name]="'footnote_ref_' + i"
+                        placeholder="الكلمة أو العبارة المشار إليها"
+                      />
                     </div>
                     <div class="form-group">
                       <label>نص الحاشية</label>
@@ -206,11 +215,14 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
                         [(ngModel)]="footnote.note"
                         [name]="'footnote_note_' + i"
                         rows="3"
+                        placeholder="شرح أو توضيح للنص المرجعي"
                       ></textarea>
                     </div>
                   </div>
                 }
               </div>
+            } @else {
+              <p class="no-data">لا توجد حواشي للاسم</p>
             }
           </div>
 
@@ -268,6 +280,38 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
       &:hover {
         background: #cbd5e1;
       }
+    }
+
+    .search-bar {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #01579b;
+        box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.1);
+      }
+    }
+
+    .results-count {
+      color: #64748b;
+      font-weight: 600;
+      white-space: nowrap;
     }
 
     .loading-state {
@@ -341,10 +385,15 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
         color: #0f172a;
       }
 
-      .name-en {
+      .name-translations {
         margin: 0;
         color: #64748b;
         font-size: 0.95rem;
+
+        .translation {
+          color: #94a3b8;
+          font-style: italic;
+        }
       }
     }
 
@@ -443,6 +492,7 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
         margin: 0;
         color: #0f172a;
         font-size: 1.5rem;
+        font-family: 'Amiri Quran', serif;
       }
 
       .close-btn {
@@ -509,6 +559,8 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
     }
 
     .form-group {
+      margin-bottom: 1rem;
+
       label {
         display: block;
         font-weight: 600;
@@ -518,7 +570,8 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
       }
 
       input,
-      textarea {
+      textarea,
+      select {
         width: 100%;
         padding: 0.75rem 1rem;
         border: 2px solid #e2e8f0;
@@ -532,6 +585,18 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
           border-color: #01579b;
           box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.1);
         }
+
+        &:disabled {
+          background: #f1f5f9;
+          cursor: not-allowed;
+        }
+      }
+
+      input.arabic-input {
+        font-family: 'Amiri Quran', serif;
+        font-size: 1.25rem;
+        text-align: right;
+        direction: rtl;
       }
 
       textarea {
@@ -560,14 +625,12 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
       }
     }
 
-    .other-names-list,
     .footnotes-list {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
 
-    .other-name-item,
     .footnote-item {
       padding: 1rem;
       background: #f8fafc;
@@ -575,9 +638,29 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
       border-right: 3px solid #01579b;
     }
 
-    .btn-remove {
-      width: 36px;
-      height: 36px;
+    .footnote-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .footnote-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #01579b;
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .btn-remove-small {
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -587,13 +670,20 @@ import { Surah, SurahName, SurahFootnote } from '../../../../core/models/surah.m
       border-radius: 0.5rem;
       cursor: pointer;
       transition: all 0.3s ease;
-      align-self: flex-end;
-      margin-top: 1.5rem;
 
       &:hover {
         background: #ef4444;
         color: white;
       }
+    }
+
+    .no-data {
+      padding: 2rem;
+      text-align: center;
+      color: #94a3b8;
+      background: #f8fafc;
+      border-radius: 0.5rem;
+      margin: 0;
     }
 
     .modal-footer {
@@ -657,14 +747,17 @@ export class SurahsManagerComponent implements OnInit {
   loading = signal(true);
   saving = signal(false);
   surahs = signal<Surah[]>([]);
+  filteredSurahs = signal<Surah[]>([]);
   editingSurah = signal<Surah | null>(null);
+
+  searchTerm = '';
 
   formData: Partial<Surah> = {
     name_ar: '',
     name_en: '',
     name_it: '',
     name_en_translation: '',
-    other_names: [],
+    // revelation_place: 'Mecca',
     name_footnotes: []
   };
 
@@ -676,6 +769,7 @@ export class SurahsManagerComponent implements OnInit {
     try {
       const data = await this.supabaseService.getAllSurahs();
       this.surahs.set(data);
+      this.filteredSurahs.set(data);
     } catch (error) {
       console.error('Failed to load surahs:', error);
       this.notificationService.error('فشل تحميل السور');
@@ -684,10 +778,27 @@ export class SurahsManagerComponent implements OnInit {
     }
   }
 
+  filterSurahs() {
+    const term = this.searchTerm.toLowerCase().trim();
+
+    if (!term) {
+      this.filteredSurahs.set(this.surahs());
+      return;
+    }
+
+    const filtered = this.surahs().filter(s =>
+      s.name_ar.includes(term) ||
+      s.name_en.toLowerCase().includes(term) ||
+      s.name_it.toLowerCase().includes(term) ||
+      s.order_number.toString() === term
+    );
+
+    this.filteredSurahs.set(filtered);
+  }
+
   editSurah(surah: Surah) {
     this.formData = {
       ...surah,
-      other_names: surah.other_names ? [...surah.other_names] : [],
       name_footnotes: surah.name_footnotes ? [...surah.name_footnotes] : []
     };
     this.editingSurah.set(surah);
@@ -695,17 +806,6 @@ export class SurahsManagerComponent implements OnInit {
 
   closeModal() {
     this.editingSurah.set(null);
-  }
-
-  addOtherName() {
-    if (!this.formData.other_names) {
-      this.formData.other_names = [];
-    }
-    this.formData.other_names.push({ name: '', meaning: '' });
-  }
-
-  removeOtherName(index: number) {
-    this.formData.other_names?.splice(index, 1);
   }
 
   addNameFootnote() {
@@ -725,15 +825,14 @@ export class SurahsManagerComponent implements OnInit {
     this.saving.set(true);
 
     try {
-      // هنا يجب إضافة دالة updateSurah في AdminService
-      const { data, error } = await (this.supabaseService as any).supabase
+      const { error } = await (this.supabaseService as any).supabase
         .from('surahs')
         .update({
           name_ar: this.formData.name_ar,
           name_en: this.formData.name_en,
           name_it: this.formData.name_it,
           name_en_translation: this.formData.name_en_translation,
-          other_names: this.formData.other_names,
+          revelation_place: this.formData.revelation_place,
           name_footnotes: this.formData.name_footnotes
         })
         .eq('id', this.editingSurah()!.id);
@@ -742,6 +841,7 @@ export class SurahsManagerComponent implements OnInit {
 
       this.notificationService.success('تم تحديث السورة بنجاح');
       await this.loadSurahs();
+      this.filterSurahs();
       this.closeModal();
     } catch (error: any) {
       console.error('Failed to update surah:', error);
