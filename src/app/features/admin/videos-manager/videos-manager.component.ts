@@ -1,26 +1,17 @@
-// src/app/features/admin/videos-manager/videos-manager.component.ts
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { AdminService } from '../../../core/services/admin.service';
-
-interface Video {
-  id: number;
-  title: string;
-  url: string;
-  description?: string;
-  thumbnail?: string;
-}
+import { Video, VideoCategory } from '../../../core/models/video.model';
 
 @Component({
   selector: 'app-videos-manager',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="videos-manager">
-      <!-- Header -->
+    <div class="manager-container">
       <div class="page-header">
         <h1>إدارة الفيديوهات</h1>
         <button (click)="openAddModal()" class="btn-primary">
@@ -29,7 +20,6 @@ interface Video {
         </button>
       </div>
 
-      <!-- Search Bar -->
       <div class="search-bar">
         <input
           type="search"
@@ -38,17 +28,23 @@ interface Video {
           (input)="filterVideos()"
           class="search-input"
         />
+
+        <select [(ngModel)]="filterCategory" (change)="filterVideos()" class="filter-select">
+          <option [ngValue]="null">كل الفئات</option>
+          @for (cat of categories(); track cat.id) {
+            <option [ngValue]="cat.id">{{ cat.categories_ar }}</option>
+          }
+        </select>
+
         <span class="results-count">{{ filteredVideos().length }} فيديو</span>
       </div>
 
-      <!-- Loading State -->
       @if (loading()) {
         <div class="loading-state">
           <div class="spinner"></div>
           <p>جاري تحميل الفيديوهات...</p>
         </div>
       } @else {
-        <!-- Videos Grid -->
         @if (filteredVideos().length === 0) {
           <div class="empty-state">
             <i class="fas fa-video-slash"></i>
@@ -62,23 +58,23 @@ interface Video {
           <div class="videos-grid">
             @for (video of filteredVideos(); track video.id) {
               <div class="video-card">
-                <!-- Thumbnail -->
                 <div class="video-thumbnail" (click)="previewVideo(video)">
                   <img [src]="video.thumbnail" [alt]="video.title" />
                   <div class="play-overlay">
                     <i class="fas fa-play-circle"></i>
                   </div>
-                </div>
-
-                <!-- Info -->
-                <div class="video-info">
-                  <h3>{{ video.title }}</h3>
-                  @if (video.description) {
-                    <p class="description">{{ video.description }}</p>
+                  @if (video.videos_categories) {
+                    <div class="category-badge">
+                      {{ video.videos_categories.categories_ar }}
+                    </div>
                   }
                 </div>
 
-                <!-- Actions -->
+                <div class="video-info">
+                  <h3>{{ video.title }}</h3>
+
+                </div>
+
                 <div class="video-actions">
                   <button (click)="previewVideo(video)" class="btn-icon" title="معاينة">
                     <i class="fas fa-eye"></i>
@@ -97,10 +93,9 @@ interface Video {
       }
     </div>
 
-    <!-- Add/Edit Modal -->
     @if (showModal()) {
-      <div class="modal-backdrop" (click)="closeModal()"></div>
-      <div class="modal">
+      <div class="custom-backdrop" (click)="closeModal()"></div>
+      <div class="custom-modal form-modal">
         <div class="modal-header">
           <h3>{{ isEditMode() ? 'تعديل الفيديو' : 'فيديو جديد' }}</h3>
           <button class="close-btn" (click)="closeModal()">
@@ -109,7 +104,22 @@ interface Video {
         </div>
 
         <form (ngSubmit)="onSubmit()" class="modal-body">
-          <!-- YouTube URL -->
+
+          <div class="form-group">
+            <label for="category" class="required">تصنيف الفيديو</label>
+            <select
+              id="category"
+              [(ngModel)]="formData.categorie_id"
+              name="categorie_id"
+              class="form-select"
+              required>
+              <option [ngValue]="undefined" disabled>اختر التصنيف</option>
+              @for (cat of categories(); track cat.id) {
+                <option [ngValue]="cat.id">{{ cat.categories_ar }}</option>
+              }
+            </select>
+          </div>
+
           <div class="form-group">
             <label for="url" class="required">رابط اليوتيوب</label>
             <input
@@ -121,19 +131,16 @@ interface Video {
               placeholder="https://www.youtube.com/watch?v=..."
               (blur)="extractThumbnail()"
             />
-            <small>أدخل رابط الفيديو من YouTube</small>
           </div>
 
-          <!-- Thumbnail Preview -->
           @if (formData.thumbnail) {
             <div class="thumbnail-preview">
               <img [src]="formData.thumbnail" alt="Preview" />
             </div>
           }
 
-          <!-- Title -->
           <div class="form-group">
-            <label for="title" class="required">عنوان الفيديو</label>
+            <label for="title" class="required">عنوان الفيديو (عربي)</label>
             <input
               type="text"
               id="title"
@@ -144,19 +151,19 @@ interface Video {
             />
           </div>
 
-          <!-- Description -->
-          <div class="form-group">
-            <label for="description">الوصف (اختياري)</label>
-            <textarea
-              id="description"
-              [(ngModel)]="formData.description"
-              name="description"
-              rows="4"
-              placeholder="وصف قصير عن الفيديو"
-            ></textarea>
+           <div class="form-group">
+            <label for="title_en">العنوان (إنجليزي - اختياري)</label>
+            <input
+              type="text"
+              id="title_en"
+              [(ngModel)]="formData.title_en"
+              name="title_en"
+              placeholder="English Title"
+            />
           </div>
 
-          <!-- Submit Buttons -->
+
+
           <div class="modal-footer">
             <button type="button" (click)="closeModal()" class="btn-secondary">
               إلغاء
@@ -175,10 +182,9 @@ interface Video {
       </div>
     }
 
-    <!-- Preview Modal -->
     @if (previewingVideo()) {
-      <div class="modal-backdrop" (click)="closePreview()"></div>
-      <div class="modal preview-modal">
+      <div class="custom-backdrop" (click)="closePreview()"></div>
+      <div class="custom-modal preview-modal">
         <div class="modal-header">
           <h3>{{ previewingVideo()?.title }}</h3>
           <button class="close-btn" (click)="closePreview()">
@@ -195,17 +201,14 @@ interface Video {
               title="{{ previewingVideo()?.title }}">
             </iframe>
           </div>
-          @if (previewingVideo()?.description) {
-            <p class="preview-description">{{ previewingVideo()?.description }}</p>
-          }
+
         </div>
       </div>
     }
 
-    <!-- Delete Confirmation -->
     @if (videoToDelete()) {
-      <div class="modal-backdrop" (click)="cancelDelete()"></div>
-      <div class="modal confirm-modal">
+      <div class="custom-backdrop" (click)="cancelDelete()"></div>
+      <div class="custom-modal confirm-modal">
         <div class="modal-header">
           <h3>تأكيد الحذف</h3>
           <button class="close-btn" (click)="cancelDelete()">
@@ -231,524 +234,157 @@ interface Video {
     }
   `,
   styles: [`
-    .videos-manager {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-
-      h1 {
-        font-size: 2rem;
-        color: #0f172a;
-        margin: 0;
-      }
-    }
+    .manager-container { max-width: 1400px; margin: 0 auto; padding: 1rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .page-header h1 { font-size: 2rem; color: #0f172a; margin: 0; }
 
     .btn-primary {
       display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.875rem 1.5rem;
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
+      align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem;
+      background: linear-gradient(135deg, #ef4444, #dc2626); color: white;
+      border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
     }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .search-bar {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 1rem;
-      margin-bottom: 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      background: white; padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem;
+      display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
-
     .search-input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: 2px solid #e2e8f0;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-
-      &:focus {
-        outline: none;
-        border-color: #ef4444;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-      }
+      flex: 1; padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.5rem; font-size: 1rem;
+    }
+    .filter-select {
+        padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 0.5rem; min-width: 160px;
+        background-color: #f8fafc; cursor: pointer;
     }
 
-    .results-count {
-      color: #64748b;
-      font-weight: 600;
-      white-space: nowrap;
+    /* Grid & Cards */
+    .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+    .video-card { background: white; border-radius: 1rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.3s; }
+    .video-card:hover { transform: translateY(-5px); }
+
+    .video-thumbnail { position: relative; aspect-ratio: 16/9; overflow: hidden; cursor: pointer; }
+    .video-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+    .play-overlay {
+        position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: 0.3s;
+    }
+    .play-overlay i { font-size: 3rem; color: white; }
+    .video-thumbnail:hover .play-overlay { opacity: 1; }
+
+    .category-badge {
+        position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white;
+        padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+        backdrop-filter: blur(4px);
     }
 
-    .loading-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      gap: 1rem;
+    .video-info { padding: 1rem; }
+    .video-info h3 { margin: 0 0 0.5rem 0; font-size: 1.1rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .description { color: #64748b; font-size: 0.9rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0; }
+
+    .video-actions { display: flex; gap: 0.5rem; padding: 0 1rem 1rem; }
+    .btn-icon { flex: 1; padding: 0.5rem; border: none; background: #f1f5f9; color: #475569; border-radius: 0.5rem; cursor: pointer; transition: 0.3s; }
+    .btn-icon:hover { background: #ef4444; color: white; }
+
+    /* Modal Styles (Custom Class to fix blur issue) */
+    .custom-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 9998; }
+    .custom-modal {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: white; border-radius: 1rem; width: 90%; z-index: 9999;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); max-height: 90vh; overflow-y: auto;
+    }
+    .form-modal { max-width: 600px; }
+    .preview-modal { max-width: 900px; }
+    .confirm-modal { max-width: 500px; }
+
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #e2e8f0; }
+    .modal-body { padding: 1.5rem; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding: 1.5rem; border-top: 1px solid #e2e8f0; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+    .form-group label.required::after { content: ' *'; color: #ef4444; }
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 0.5rem; font-size: 1rem;
+    }
+    .form-select {
+      background-color: white;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: left 1rem center;
+      background-size: 1em;
     }
 
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid #e2e8f0;
-      border-top-color: #ef4444;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    .thumbnail-preview img { width: 100%; border-radius: 0.5rem; }
+    .video-player { position: relative; width: 100%; aspect-ratio: 16/9; margin-bottom: 1rem; }
+    .video-player iframe { width: 100%; height: 100%; border-radius: 0.5rem; }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 4rem 2rem;
-      background: white;
-      border-radius: 1rem;
-      color: #94a3b8;
-
-      i {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-      }
-
-      p {
-        font-size: 1.25rem;
-        margin-bottom: 1.5rem;
-      }
-    }
-
-    .videos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .video-card {
-      background: white;
-      border-radius: 1rem;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-
-      &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      }
-    }
-
-    .video-thumbnail {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      overflow: hidden;
-      cursor: pointer;
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-      }
-
-      .play-overlay {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.3);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-
-        i {
-          font-size: 3rem;
-          color: white;
-          transform: scale(1);
-          transition: transform 0.3s ease;
-        }
-      }
-
-      &:hover {
-        img {
-          transform: scale(1.05);
-        }
-
-        .play-overlay {
-          opacity: 1;
-
-          i {
-            transform: scale(1.2);
-          }
-        }
-      }
-    }
-
-    .video-info {
-      padding: 1.25rem;
-
-      h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1.1rem;
-        color: #0f172a;
-        line-height: 1.4;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      .description {
-        margin: 0;
-        color: #64748b;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-    }
-
-    .video-actions {
-      display: flex;
-      gap: 0.5rem;
-      padding: 0 1.25rem 1.25rem;
-    }
-
-    .btn-icon {
-      flex: 1;
-      padding: 0.625rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      background: #f1f5f9;
-      color: #475569;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1rem;
-
-      &:hover {
-        background: #ef4444;
-        color: white;
-        transform: translateY(-2px);
-      }
-
-      &.btn-danger:hover {
-        background: #dc2626;
-      }
-    }
-
-    .btn-secondary {
-      padding: 0.75rem 1.5rem;
-      background: #e2e8f0;
-      color: #475569;
-      border: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background: #cbd5e1;
-      }
-    }
-
-    /* Modal Styles */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
-      z-index: 9998;
-      animation: fadeIn 0.2s ease;
-    }
-
-    .modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border-radius: 1rem;
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      z-index: 9999;
-      animation: slideUp 0.3s ease;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-
-      &.preview-modal {
-        max-width: 900px;
-      }
-
-      &.confirm-modal {
-        max-width: 500px;
-      }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -40%);
-      }
-      to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-      }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem;
-      border-bottom: 1px solid #e2e8f0;
-
-      h3 {
-        margin: 0;
-        color: #0f172a;
-        font-size: 1.25rem;
-      }
-
-      .close-btn {
-        background: none;
-        border: none;
-        color: #64748b;
-        font-size: 1.5rem;
-        cursor: pointer;
-        transition: color 0.3s ease;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0.5rem;
-
-        &:hover {
-          color: #0f172a;
-          background: #f1f5f9;
-        }
-      }
-    }
-
-    .modal-body {
-      padding: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-
-      label {
-        display: block;
-        font-weight: 600;
-        color: #334155;
-        margin-bottom: 0.5rem;
-
-        &.required::after {
-          content: ' *';
-          color: #ef4444;
-        }
-      }
-
-      input[type="text"],
-      input[type="url"],
-      textarea {
-        width: 100%;
-        padding: 0.875rem 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        font-family: inherit;
-        transition: all 0.3s ease;
-
-        &:focus {
-          outline: none;
-          border-color: #ef4444;
-          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-        }
-      }
-
-      textarea {
-        resize: vertical;
-      }
-
-      small {
-        display: block;
-        margin-top: 0.5rem;
-        color: #64748b;
-        font-size: 0.875rem;
-      }
-    }
-
-    .thumbnail-preview {
-      margin-bottom: 1.5rem;
-
-      img {
-        width: 100%;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-    }
-
-    .video-player {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      margin-bottom: 1rem;
-
-      iframe {
-        width: 100%;
-        height: 100%;
-        border-radius: 0.5rem;
-      }
-    }
-
-    .preview-description {
-      color: #475569;
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      padding: 1.5rem;
-      border-top: 1px solid #e2e8f0;
-    }
-
-    .btn-danger {
-      padding: 0.75rem 1.5rem;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      &:hover:not(:disabled) {
-        background: #dc2626;
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-    }
-
-    .warning {
-      color: #f59e0b;
-      font-weight: 600;
-    }
-
-    .spinner-sm {
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @media (max-width: 768px) {
-      .videos-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .modal {
-        width: 95%;
-        max-height: 95vh;
-      }
-    }
+    .btn-secondary { padding: 0.75rem 1.5rem; background: #e2e8f0; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; color: #475569; }
+    .btn-danger { padding: 0.75rem 1.5rem; background: #ef4444; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+    .spinner-sm { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   `]
 })
 export class VideosManagerComponent implements OnInit {
   private supabaseService = inject(SupabaseService);
   private adminService = inject(AdminService);
   private sanitizer = inject(DomSanitizer);
+  private cdr = inject(ChangeDetectorRef);
 
+  // Data Signals
   allVideos = signal<Video[]>([]);
   filteredVideos = signal<Video[]>([]);
+  categories = signal<VideoCategory[]>([]); // قائمة الفئات
   loading = signal(true);
 
+  // Filters
   searchTerm = '';
+  filterCategory: number | null = null;
 
   // Modal states
   showModal = signal(false);
   isEditMode = signal(false);
   saving = signal(false);
 
+  // Form Data
   formData: Partial<Video> = {
     title: '',
+    title_en: '',
     url: '',
-    description: '',
-    thumbnail: ''
+     thumbnail: '',
+    categorie_id: undefined
   };
 
-  // Preview
+  // Preview & Delete
   previewingVideo = signal<Video | null>(null);
-
-  // Delete
   videoToDelete = signal<Video | null>(null);
   deleting = signal(false);
 
   private editingId: number | null = null;
 
   async ngOnInit() {
-    await this.loadVideos();
+    await Promise.all([this.loadVideos(), this.loadCategories()]);
+  }
+
+  async loadCategories() {
+    try {
+      const cats = await this.supabaseService.getVideoCategories();
+      this.categories.set(cats);
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    }
   }
 
   async loadVideos() {
     try {
       const videos = await this.supabaseService.getAllVideos();
-      this.allVideos.set(videos.map(v => ({
+      const mappedVideos = videos.map(v => ({
         ...v,
         thumbnail: this.getYoutubeThumbnail(v.url)
-      })));
-      this.filteredVideos.set(this.allVideos());
+      }));
+      this.allVideos.set(mappedVideos);
+      this.filterVideos();
     } catch (error) {
       console.error('Failed to load videos:', error);
     } finally {
@@ -757,20 +393,23 @@ export class VideosManagerComponent implements OnInit {
   }
 
   filterVideos() {
+    let result = this.allVideos();
     const term = this.searchTerm.toLowerCase().trim();
-    if (!term) {
-      this.filteredVideos.set(this.allVideos());
-      return;
+
+    if (term) {
+      result = result.filter(v =>
+        v.title.toLowerCase().includes(term)
+       );
     }
 
-    this.filteredVideos.set(
-      this.allVideos().filter(v =>
-        v.title.toLowerCase().includes(term) ||
-        v.description?.toLowerCase().includes(term)
-      )
-    );
+    if (this.filterCategory) {
+      result = result.filter(v => v.categorie_id === this.filterCategory);
+    }
+
+    this.filteredVideos.set(result);
   }
 
+  // --- YouTube Helpers ---
   extractVideoId(url: string): string {
     const match = url.match(/(?:v=|\/embed\/|\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return match ? match[1] : '';
@@ -778,7 +417,7 @@ export class VideosManagerComponent implements OnInit {
 
   getYoutubeThumbnail(url: string): string {
     const videoId = this.extractVideoId(url);
-    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
   }
 
   getEmbedUrl(url: string): SafeResourceUrl {
@@ -793,23 +432,34 @@ export class VideosManagerComponent implements OnInit {
     }
   }
 
+  // --- Modal Logic ---
   openAddModal() {
     this.isEditMode.set(false);
     this.editingId = null;
     this.formData = {
       title: '',
+      title_en: '',
       url: '',
-      description: '',
-      thumbnail: ''
+       thumbnail: '',
+      categorie_id: undefined
     };
-    this.showModal.set(true);
+
+    setTimeout(() => {
+      this.showModal.set(true);
+      this.cdr.detectChanges();
+    }, 10);
   }
 
   editVideo(video: Video) {
     this.isEditMode.set(true);
     this.editingId = video.id;
+    // نسخ القيم بما فيها categorie_id لتظهر في القائمة المنسدلة
     this.formData = { ...video };
-    this.showModal.set(true);
+
+    setTimeout(() => {
+      this.showModal.set(true);
+      this.cdr.detectChanges();
+    }, 10);
   }
 
   closeModal() {
@@ -817,14 +467,22 @@ export class VideosManagerComponent implements OnInit {
   }
 
   async onSubmit() {
+    // التحقق من اختيار التصنيف
+    if (!this.formData.categorie_id) {
+      alert('الرجاء اختيار فئة للفيديو');
+      return;
+    }
+
     this.saving.set(true);
 
     try {
-      // Extract thumbnail
       this.extractThumbnail();
 
       if (this.isEditMode() && this.editingId) {
-        await this.adminService.updateVideo(this.editingId, this.formData);
+        // حذف videos_categories من البيانات المرسلة لأنها ليست عموداً في جدول videos
+        const { videos_categories, ...payload } = this.formData as any;
+        // هنا يتم إرسال categorie_id المحدث مع الـ payload
+        await this.adminService.updateVideo(this.editingId, payload);
       } else {
         await this.adminService.createVideo(this.formData as any);
       }
@@ -839,8 +497,10 @@ export class VideosManagerComponent implements OnInit {
     }
   }
 
+  // --- Preview & Delete ---
   previewVideo(video: Video) {
     this.previewingVideo.set(video);
+    setTimeout(() => this.cdr.detectChanges(), 10);
   }
 
   closePreview() {
@@ -849,6 +509,7 @@ export class VideosManagerComponent implements OnInit {
 
   deleteVideo(video: Video) {
     this.videoToDelete.set(video);
+    setTimeout(() => this.cdr.detectChanges(), 10);
   }
 
   cancelDelete() {
@@ -863,10 +524,8 @@ export class VideosManagerComponent implements OnInit {
 
     try {
       await this.adminService.deleteVideo(video.id);
-
       this.allVideos.update(videos => videos.filter(v => v.id !== video.id));
       this.filterVideos();
-
       this.videoToDelete.set(null);
     } catch (error) {
       console.error('Failed to delete video:', error);

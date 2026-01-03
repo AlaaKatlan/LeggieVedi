@@ -1,1 +1,266 @@
-<p>tafsirs-manager works!</p>
+<!-- استبدل محتوى tafsirs-manager.component.html بهذا -->
+
+<div class="tafsirs-manager">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>إدارة التفاسير</h1>
+    <div class="header-actions">
+      <button (click)="openAddModal()" class="btn-primary">
+        <i class="fas fa-plus"></i>
+        تفسير جديد
+      </button>
+      <button (click)="router.navigate(['/admin/quran'])" class="btn-secondary">
+        <i class="fas fa-arrow-right"></i>
+        رجوع
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <input
+      type="search"
+      placeholder="بحث في التفاسير..."
+      [(ngModel)]="searchTerm"
+      (input)="filterTafsirs()"
+      class="search-input"
+    />
+
+    <select [(ngModel)]="filterType" (change)="filterTafsirs()" class="filter-select">
+      <option value="">كل الأنواع</option>
+      <option value="main">رئيسي</option>
+      <option value="extra">إضافي</option>
+    </select>
+
+    <select [(ngModel)]="filterLang" (change)="filterTafsirs()" class="filter-select">
+      <option value="">كل اللغات</option>
+      <option value="ar">عربي</option>
+      <option value="it">إيطالي</option>
+      <option value="en">إنجليزي</option>
+    </select>
+
+    <span class="results-count">{{ filteredTafsirs().length }} تفسير</span>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>جاري تحميل التفاسير...</p>
+    </div>
+  } @else {
+    <!-- Tafsirs List -->
+    @if (filteredTafsirs().length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-comments"></i>
+        <p>لا توجد تفاسير</p>
+      </div>
+    } @else {
+      <div class="tafsirs-list">
+        @for (tafsir of filteredTafsirs(); track tafsir.id) {
+          <div class="tafsir-card">
+            <div class="tafsir-header">
+              <div class="tafsir-badge" [class.main]="tafsir.type === 'main'" [class.extra]="tafsir.type === 'extra'">
+                {{ tafsir.type === 'main' ? 'رئيسي' : 'إضافي' }}
+              </div>
+              <div class="tafsir-meta">
+                <span class="surah-info">
+                  {{ tafsir.surah_name }} - آية {{ tafsir.verse_number }}
+                </span>
+                <span class="lang-badge" [class]="'lang-' + tafsir.language_code">
+                  {{ getLangName(tafsir.language_code) }}
+                </span>
+              </div>
+              <div class="actions">
+                <button (click)="editTafsir(tafsir)" class="btn-icon" title="تعديل">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button (click)="deleteTafsir(tafsir)" class="btn-icon btn-danger" title="حذف">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="tafsir-content">
+              <div class="arabic-text">{{ tafsir.text_uthmani }}</div>
+              <div class="tafsir-text">
+                {{ tafsir.tafsir_text | slice:0:200 }}...
+              </div>
+              @if (tafsir.interpreter) {
+                <div class="interpreter-info">
+                  <i class="fas fa-user-graduate"></i>
+                  {{ tafsir.interpreter.display_name_it || tafsir.interpreter.short_name }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+<!-- Add/Edit Modal -->
+@if (showModal()) {
+  <div class="modal-backdrop" (click)="closeModal()"></div>
+  <div class="modal large-modal">
+    <div class="modal-header">
+      <h3>{{ isEditMode() ? 'تعديل التفسير' : 'تفسير جديد' }}</h3>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="modal-body">
+      <!-- Type Selection -->
+      <div class="form-group">
+        <label class="required">نوع التفسير</label>
+        <select [(ngModel)]="formData.type" name="type" required [disabled]="isEditMode()">
+          <option value="">-- اختر النوع --</option>
+          <option value="main">رئيسي</option>
+          <option value="extra">إضافي</option>
+        </select>
+      </div>
+
+      <!-- Surah and Ayah Selection -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="required">السورة</label>
+          <select
+            [(ngModel)]="selectedSurahId"
+            name="surah"
+            required
+            (change)="onSurahChange()"
+            [disabled]="isEditMode()">
+            <option [value]="null">-- اختر السورة --</option>
+            @for (surah of surahs(); track surah.id) {
+              <option [value]="surah.id">
+                {{ surah.order_number }}. {{ surah.name_ar }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="required">رقم الآية</label>
+          <select
+            [(ngModel)]="formData.ayah_id"
+            name="ayah_id"
+            required
+            [disabled]="!selectedSurahId || isEditMode()">
+            <option [value]="null">-- اختر الآية --</option>
+            @for (ayah of availableAyahs(); track ayah.id) {
+              <option [value]="ayah.id">
+                آية {{ ayah.verse_number }}
+              </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Interpreter -->
+      <div class="form-group">
+        <label>المفسر (اختياري)</label>
+        <select [(ngModel)]="formData.interpreter_id" name="interpreter_id">
+          <option [value]="null">-- بدون مفسر --</option>
+          @for (interp of interpreters(); track interp.id) {
+            <option [value]="interp.id">
+              <!-- {{ interp.display_name_it || interp.short_name }} -->
+            </option>
+          }
+        </select>
+      </div>
+
+      <!-- Language -->
+      <div class="form-group">
+        <label class="required">اللغة</label>
+        <select [(ngModel)]="formData.language_code" name="language_code" required>
+          <option value="ar">العربية</option>
+          <option value="it">الإيطالية</option>
+          <option value="en">الإنجليزية</option>
+        </select>
+      </div>
+
+      <!-- Tafsir Text -->
+      <div class="form-group">
+        <label class="required">نص التفسير</label>
+        <textarea
+          [(ngModel)]="formData.tafsir_text"
+          name="tafsir_text"
+          rows="15"
+          required
+          placeholder="اكتب نص التفسير هنا..."
+        ></textarea>
+      </div>
+
+      <!-- Extra Tafsir Fields -->
+      @if (formData.type === 'extra') {
+        <div class="form-row">
+          <div class="form-group">
+            <label>اسم المصدر (اختياري)</label>
+            <input
+              type="text"
+              [(ngModel)]="formData.source_name"
+              name="source_name"
+              placeholder="اسم الكتاب أو المصدر"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>ترتيب العرض</label>
+            <input
+              type="number"
+              [(ngModel)]="formData.display_order"
+              name="display_order"
+              min="0"
+            />
+          </div>
+        </div>
+      }
+
+      <!-- Submit Buttons -->
+      <div class="modal-footer">
+        <button type="button" (click)="closeModal()" class="btn-secondary">
+          إلغاء
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner-sm"></span>
+            جاري الحفظ...
+          } @else {
+            <i class="fas fa-save"></i>
+            حفظ
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+}
+
+<!-- Delete Confirmation -->
+@if (tafsirToDelete()) {
+  <div class="modal-backdrop" (click)="cancelDelete()"></div>
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <h3>تأكيد الحذف</h3>
+      <button class="close-btn" (click)="cancelDelete()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>هل أنت متأكد من حذف هذا التفسير؟</p>
+      <p class="warning">⚠️ هذا الإجراء لا يمكن التراجع عنه!</p>
+    </div>
+    <div class="modal-footer">
+      <button (click)="cancelDelete()" class="btn-secondary">إلغاء</button>
+      <button (click)="confirmDelete()" class="btn-danger" [disabled]="deleting()">
+        @if (deleting()) {
+          <span class="spinner-sm"></span>
+          جاري الحذف...
+        } @else {
+          حذف
+        }
+      </button>
+    </div>
+  </div>
+}

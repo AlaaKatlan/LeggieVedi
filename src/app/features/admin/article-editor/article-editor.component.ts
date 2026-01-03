@@ -1,505 +1,317 @@
-// src/app/features/admin/article-editor/article-editor.component.ts
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { EditorComponent } from '@tinymce/tinymce-angular';
 import { AdminService } from '../../../core/services/admin.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
-import { Article } from '../../../core/models/article.model';
-import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 @Component({
   selector: 'app-article-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, CKEditorModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, EditorComponent],
   template: `
-    <div class="article-editor">
-      <div class="editor-header">
+    <div class="editor-container">
+      <div class="page-header">
         <h1>{{ isEditMode() ? 'تعديل المقال' : 'مقال جديد' }}</h1>
-        <button (click)="goBack()" class="btn-secondary">
-          <i class="fas fa-arrow-right"></i>
-          رجوع
-        </button>
+        <div class="actions">
+          <button (click)="cancel()" class="btn-secondary">إلغاء</button>
+          <button (click)="save()" class="btn-primary" [disabled]="form.invalid || isSaving() || isUploading()">
+            {{ isSaving() ? 'جاري الحفظ...' : 'حفظ المقال' }}
+          </button>
+        </div>
       </div>
 
-      @if (loading()) {
-        <div class="loading-state">
-          <div class="spinner"></div>
-          <p>جاري التحميل...</p>
-        </div>
-      } @else {
-        <form (ngSubmit)="onSubmit()" class="editor-form">
-          <!-- Title -->
+      <form [formGroup]="form" class="editor-form">
+        <div class="main-content">
           <div class="form-group">
-            <label for="title" class="required">عنوان المقال</label>
-            <input
-              type="text"
-              id="title"
-              [(ngModel)]="formData.title"
-              name="title"
-              required
-              placeholder="أدخل عنوان المقال"
-            />
+            <label>عنوان المقال <span class="required">*</span></label>
+            <input type="text" formControlName="title" class="form-input" placeholder="أدخل عنوان المقال" />
           </div>
 
-          <!-- Slug -->
-          <div class="form-group">
-            <label for="slug" class="required">الرابط (Slug)</label>
-            <input
-              type="text"
-              id="slug"
-              [(ngModel)]="formData.slug"
-              name="slug"
-              required
-              placeholder="article-slug"
-            />
-            <small>سيظهر في الرابط: /blog/{{ formData.slug || 'slug' }}</small>
-          </div>
-
-          <!-- Category -->
-          <div class="form-group">
-            <label for="category" class="required">الفئة</label>
-            <select id="category" [(ngModel)]="formData.category" name="category" required>
-              <option value="">اختر الفئة</option>
-              <option value="نصوص">نصوص</option>
-              <option value="مقالات">مقالات</option>
-              <option value="وجدانيات">وجدانيات</option>
-            </select>
-          </div>
-
-          <!-- Excerpt -->
-          <div class="form-group">
-            <label for="excerpt">مقتطف (اختياري)</label>
-            <textarea
-              id="excerpt"
-              [(ngModel)]="formData.excerpt"
-              name="excerpt"
-              rows="3"
-              placeholder="مقتطف قصير عن المقال"
-            ></textarea>
-          </div>
-
-          <!-- Cover Image -->
-          <div class="form-group">
-            <label for="cover_image">صورة الغلاف (اختياري)</label>
-            <div class="image-upload">
-              @if (formData.cover_image_url) {
-                <div class="image-preview">
-                  <img [src]="formData.cover_image_url" alt="Cover" />
-                  <button type="button" (click)="removeCoverImage()" class="remove-btn">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              } @else {
-                <input
-                  type="file"
-                  id="cover_image"
-                  (change)="onImageSelected($event)"
-                  accept="image/*"
-                />
-                <label for="cover_image" class="file-label">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  اختر صورة
-                </label>
-              }
-            </div>
-          </div>
-
-          <!-- Is Link (External Article) -->
-          <div class="form-group checkbox-group">
+          <div class="form-group checkbox-group link-toggle">
             <label>
-              <input
-                type="checkbox"
-                [(ngModel)]="formData.is_link"
-                name="is_link"
-              />
-              <span>مقال خارجي (رابط لملف Google Docs أو PDF)</span>
+              <input type="checkbox" formControlName="is_link">
+              <span>هذا مقال خارجي (رابط PDF أو Google Doc)</span>
             </label>
           </div>
 
-          <!-- Article Link (if is_link is true) -->
-          @if (formData.is_link) {
-            <div class="form-group">
-              <label for="article_link" class="required">رابط المقال</label>
-              <input
-                type="url"
-                id="article_link"
-                [(ngModel)]="formData.article_link"
-                name="article_link"
-                placeholder="https://docs.google.com/document/..."
-              />
-              <small>أدخل رابط Google Docs أو PDF</small>
+          @if (form.get('is_link')?.value) {
+            <div class="form-group animate-fade">
+              <label>رابط المقال <span class="required">*</span></label>
+              <input type="url" formControlName="article_link" class="form-input" placeholder="https://docs.google.com/..." />
+              <small>ألصق هنا رابط الملف أو المستند الخارجي.</small>
             </div>
           } @else {
-            <!-- Content (if is_link is false) -->
-            <div class="form-group">
-              <label for="content" class="required">محتوى المقال</label>
-              <textarea
-                id="content"
-                [(ngModel)]="formData.content"
-                name="content"
-                rows="20"
-                placeholder="اكتب محتوى المقال هنا (يدعم HTML)"
-              ></textarea>
+            <div class="form-group animate-fade">
+              <label>محتوى المقال (انسخ من Word والصق هنا)</label>
+              <editor
+                [init]="editorConfig"
+                formControlName="content"
+                apiKey="nij901wj4g71fc8k99s86id8ul3ubwlbql4k64ky0tm09g5b"
+              ></editor>
             </div>
           }
+        </div>
 
-          <!-- Published Date -->
-          <div class="form-group">
-            <label for="published_at" class="required">تاريخ النشر</label>
-            <input
-              type="datetime-local"
-              id="published_at"
-              [(ngModel)]="formData.published_at"
-              name="published_at"
-              required
-            />
+        <div class="sidebar">
+          <div class="card">
+            <h3>إعدادات النشر</h3>
+
+            <div class="form-group">
+              <label>التصنيف</label>
+              <select formControlName="category" class="form-select">
+                <option value="نصوص">نصوص</option>
+                <option value="مقالات">مقالات</option>
+                <option value="وجدانيات">وجدانيات</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>صورة الغلاف</label>
+              <div class="image-upload-area">
+                @if (form.get('cover_image_url')?.value) {
+                  <div class="img-preview-wrapper">
+                    <img [src]="form.get('cover_image_url')?.value" alt="Cover Preview" class="cover-preview" />
+                    <button type="button" class="remove-img-btn" (click)="removeImage()">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                } @else {
+                  <div class="upload-box">
+                    <input
+                      type="file"
+                      id="coverUpload"
+                      (change)="onFileSelected($event)"
+                      accept="image/*"
+                      class="hidden-input"
+                    />
+                    <label for="coverUpload" class="upload-label">
+                      @if (isUploading()) {
+                        <span class="spinner-sm"></span>
+                        <span>جاري الرفع...</span>
+                      } @else {
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>اختر صورة</span>
+                      }
+                    </label>
+                  </div>
+                }
+                <input type="hidden" formControlName="cover_image_url">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Slug (الرابط)</label>
+              <input type="text" formControlName="slug" class="form-input" placeholder="رابط-المقال-بالانجليزي" />
+              <small>يترك فارغاً للتوليد التلقائي</small>
+            </div>
+
+            <div class="form-group checkbox-group">
+               <label>
+                 <input type="checkbox" formControlName="is_published">
+                 نشر المقال فوراً
+               </label>
+            </div>
           </div>
-<!-- <ckeditor
-  [editor]="Editor"
-  [(ngModel)]="formData.content"
-  name="content">
-</ckeditor> -->
-          <!-- Submit Buttons -->
-          <div class="form-actions">
-            <button type="button" (click)="goBack()" class="btn-secondary">
-              إلغاء
-            </button>
-            <button type="submit" class="btn-primary" [disabled]="saving()">
-              @if (saving()) {
-                <span class="spinner-sm"></span>
-                جاري الحفظ...
-              } @else {
-                <i class="fas fa-save"></i>
-                حفظ المقال
-              }
-            </button>
-          </div>
-        </form>
-      }
+        </div>
+      </form>
     </div>
   `,
   styles: [`
-    .article-editor {
-      max-width: 900px;
-      margin: 0 auto;
+    .editor-container { max-width: 1400px; margin: 0 auto; padding: 2rem 1rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .page-header h1 { font-size: 2rem; color: #0f172a; margin: 0; }
+    .actions { display: flex; gap: 1rem; }
+
+    .editor-form { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #334155; }
+    .required { color: #ef4444; }
+
+    .form-input, .form-select { width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 0.5rem; font-size: 1rem; }
+    .form-input:focus { outline: none; border-color: #01579b; }
+
+    .card { background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .card h3 { margin-top: 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1rem; }
+
+    /* Upload Styles */
+    .hidden-input { display: none; }
+    .upload-box { border: 2px dashed #cbd5e1; border-radius: 0.5rem; text-align: center; transition: all 0.3s; }
+    .upload-box:hover { border-color: #01579b; background: #f8fafc; }
+    .upload-label { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 2rem; cursor: pointer; color: #64748b; }
+    .upload-label i { font-size: 1.5rem; }
+
+    .img-preview-wrapper { position: relative; border-radius: 0.5rem; overflow: hidden; border: 1px solid #e2e8f0; }
+    .cover-preview { width: 100%; height: auto; display: block; }
+    .remove-img-btn {
+      position: absolute; top: 0.5rem; right: 0.5rem;
+      background: rgba(239, 68, 68, 0.9); color: white; border: none;
+      width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .editor-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
+    .btn-primary { padding: 0.75rem 1.5rem; background: #01579b; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
+    .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+    .btn-secondary { padding: 0.75rem 1.5rem; background: #e2e8f0; color: #475569; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
 
-      h1 {
-        font-size: 2rem;
-        color: #0f172a;
-        margin: 0;
-      }
-    }
+    .checkbox-group label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none; }
+    .checkbox-group input { width: 18px; height: 18px; accent-color: #01579b; }
 
-    .loading-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      gap: 1rem;
-    }
+    .link-toggle { background: #f1f5f9; padding: 1rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+    .animate-fade { animation: fadeIn 0.3s ease-in-out; }
 
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid #e2e8f0;
-      border-top-color: #01579b;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .spinner-sm { width: 16px; height: 16px; border: 2px solid #cbd5e1; border-top-color: #01579b; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .editor-form {
-      background: white;
-      border-radius: 1rem;
-      padding: 2rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-
-      label {
-        display: block;
-        font-weight: 600;
-        color: #334155;
-        margin-bottom: 0.5rem;
-
-        &.required::after {
-          content: ' *';
-          color: #ef4444;
-        }
-      }
-
-      input[type="text"],
-      input[type="url"],
-      input[type="datetime-local"],
-      select,
-      textarea {
-        width: 100%;
-        padding: 0.875rem 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        font-family: inherit;
-        transition: all 0.3s ease;
-
-        &:focus {
-          outline: none;
-          border-color: #01579b;
-          box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.1);
-        }
-      }
-
-      textarea {
-        resize: vertical;
-        font-family: 'Courier New', monospace;
-      }
-
-      small {
-        display: block;
-        margin-top: 0.5rem;
-        color: #64748b;
-        font-size: 0.875rem;
-      }
-    }
-
-    .checkbox-group {
-      label {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        cursor: pointer;
-
-        input[type="checkbox"] {
-          width: 20px;
-          height: 20px;
-          cursor: pointer;
-        }
-
-        span {
-          font-weight: 500;
-        }
-      }
-    }
-
-    .image-upload {
-      input[type="file"] {
-        display: none;
-      }
-
-      .file-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 2rem;
-        background: #f1f5f9;
-        border: 2px dashed #cbd5e1;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-
-        i {
-          font-size: 1.5rem;
-          color: #01579b;
-        }
-
-        &:hover {
-          background: #e2e8f0;
-          border-color: #01579b;
-        }
-      }
-
-      .image-preview {
-        position: relative;
-        display: inline-block;
-
-        img {
-          max-width: 300px;
-          border-radius: 0.5rem;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .remove-btn {
-          position: absolute;
-          top: 0.5rem;
-          right: 0.5rem;
-          width: 32px;
-          height: 32px;
-          background: #ef4444;
-          color: white;
-          border: none;
-          border-radius: 50%;
-          cursor: pointer;
-          transition: all 0.3s ease;
-
-          &:hover {
-            background: #dc2626;
-            transform: scale(1.1);
-          }
-        }
-      }
-    }
-
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 2rem;
-      padding-top: 2rem;
-      border-top: 1px solid #e2e8f0;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-      padding: 0.875rem 1.5rem;
-      border: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #01579b, #00897b);
-      color: white;
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(1, 87, 155, 0.3);
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-    }
-
-    .btn-secondary {
-      background: #e2e8f0;
-      color: #475569;
-
-      &:hover {
-        background: #cbd5e1;
-      }
-    }
-
-    .spinner-sm {
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
+    @media (max-width: 900px) {
+      .editor-form { grid-template-columns: 1fr; }
     }
   `]
 })
 export class ArticleEditorComponent implements OnInit {
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
   private adminService = inject(AdminService);
   private supabaseService = inject(SupabaseService);
-public Editor = ClassicEditor;
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  loading = signal(true);
-  saving = signal(false);
   isEditMode = signal(false);
+  isSaving = signal(false);
+  isUploading = signal(false);
+  articleId: number | null = null;
 
-  formData: Partial<Article> = {
-    title: '',
-    slug: '',
-    content: '',
-    excerpt: '',
-    category: '',
-    published_at: new Date().toISOString().slice(0, 16),
-    cover_image_url: '',
-    is_link: false,
-    article_link: ''
+  // ✅✅ تمت إضافة is_link و article_link إلى الفورم ✅✅
+  form: FormGroup = this.fb.group({
+    title: ['', Validators.required],
+    content: [''],
+    category: ['نصوص'],
+    cover_image_url: [''],
+    slug: [''],
+    is_published: [true],
+    is_link: [false],      // هل هو رابط خارجي؟
+    article_link: ['']     // الرابط الخارجي
+  });
+
+  editorConfig = {
+    height: 600,
+    menubar: true,
+    directionality: 'rtl' as const,
+    language: 'ar',
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'help', 'wordcount', 'directionality'
+    ],
+    toolbar: 'undo redo | blocks | ' +
+      'bold italic backcolor forecolor | alignleft aligncenter ' +
+      'alignright alignjustify | bullist numlist outdent indent | ' +
+      'removeformat | image | table | ltr rtl | help',
+
+    paste_data_images: true,
+    paste_as_text: false,
+    paste_retain_style_properties: 'all',
+    paste_webkit_styles: 'all',
+    paste_merge_formats: false,
+    valid_elements: '*[*]',
+    extended_valid_elements: '*[*]',
+    browser_spellcheck: true,
+
+    content_style: `
+      body {
+        font-family: 'Times New Roman', Helvetica, Arial, sans-serif;
+        font-size: 14pt;
+        direction: rtl;
+        text-align: right;
+        line-height: 1.6;
+        color: #000;
+      }
+      table { border-collapse: collapse; width: 100%; }
+      td, th { border: 1px solid #ccc; padding: 5px; }
+      img { max-width: 100%; height: auto; }
+    `
   };
-
-  private articleId: number | null = null;
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-
     if (id) {
       this.isEditMode.set(true);
-      this.articleId = parseInt(id);
-      await this.loadArticle(this.articleId);
+      this.articleId = +id;
+      await this.loadArticle(+id);
     }
-
-    this.loading.set(false);
   }
 
   async loadArticle(id: number) {
     try {
-      const article = await this.supabaseService.getArticleBySlug(''); // Need to get by ID
-      // Temporary: load all and find by ID
       const articles = await this.supabaseService.getAllArticles();
-      const found = articles.find(a => a.id === id);
-
-      if (found) {
-        this.formData = { ...found };
+      const article = articles.find(a => a.id === id);
+      if (article) {
+        this.form.patchValue({
+          title: article.title,
+          content: article.content,
+          category: article.category,
+          cover_image_url: article.cover_image_url,
+          slug: article.slug,
+          is_published: true,
+          is_link: article.is_link,       // تحميل حالة الرابط
+          article_link: article.article_link // تحميل الرابط
+        });
       }
     } catch (error) {
-      console.error('Failed to load article:', error);
+      console.error(error);
     }
   }
 
-  async onImageSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+  async onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-    const file = input.files[0];
-
+    this.isUploading.set(true);
     try {
-      const url = await this.adminService.uploadImage(file, 'articles');
-      this.formData.cover_image_url = url;
+      const url = await this.adminService.uploadImage(file, 'images');
+      this.form.patchValue({ cover_image_url: url });
+      this.form.get('cover_image_url')?.markAsDirty();
     } catch (error) {
-      console.error('Failed to upload image:', error);
+      console.error('Upload failed:', error);
       alert('فشل رفع الصورة');
+    } finally {
+      this.isUploading.set(false);
     }
   }
 
-  removeCoverImage() {
-    this.formData.cover_image_url = '';
+  removeImage() {
+    this.form.patchValue({ cover_image_url: '' });
+    this.form.get('cover_image_url')?.markAsDirty();
   }
 
-  async onSubmit() {
-    this.saving.set(true);
+  async save() {
+    if (this.form.invalid) return;
+
+    this.isSaving.set(true);
+    const formData = this.form.value;
+
+    if (!formData.slug) {
+      formData.slug = formData.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    }
 
     try {
       if (this.isEditMode() && this.articleId) {
-        await this.adminService.updateArticle(this.articleId, this.formData);
+        await this.adminService.updateArticle(this.articleId, formData);
       } else {
-        await this.adminService.createArticle(this.formData);
+        await this.adminService.createArticle(formData);
       }
-
       this.router.navigate(['/admin/articles']);
     } catch (error) {
-      console.error('Failed to save article:', error);
-      alert('فشل حفظ المقال');
+      console.error('Save failed', error);
+      alert('فشل الحفظ: ' + (error as any).message);
     } finally {
-      this.saving.set(false);
+      this.isSaving.set(false);
     }
   }
 
-  goBack() {
+  cancel() {
     this.router.navigate(['/admin/articles']);
   }
 }

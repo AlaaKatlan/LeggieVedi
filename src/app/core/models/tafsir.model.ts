@@ -27,9 +27,27 @@ export interface Tafsir {
 
 // يمثل كائن التفسير الإضافي
 export interface ExtraTafsir {
-  id: number;
-  text: string;
-  lang: string;
+ id: number;
+  text: string;              // من JSONB في View
+  lang: string;              // من JSONB في View
   order: number;
-  interpreter: Interpreter | null; // تم استبدال title و source
+  interpreter: Interpreter | null;
+}
+// للإدراة: نموذج يطابق الجداول الفعلية
+export interface TafsirDatabase {
+  id: number;
+  ayah_id: number;
+  tafsir_text: string;       // ✅ اسم العمود الفعلي
+  language_code: string;     // ✅ اسم العمود الفعلي
+  interpreter_id: number | null;
+}
+
+export interface ExtraTafsirDatabase {
+  id: number;
+  ayah_id: number;
+  tafsir_text: string;       // ✅ اسم العمود الفعلي
+  language_code: string;     // ✅ اسم العمود الفعلي
+  source_name: string | null;
+  display_order: number;
+  interpreter_id: number | null;
 }

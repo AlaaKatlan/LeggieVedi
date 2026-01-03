@@ -1,9 +1,11 @@
 <div class="article-container">
+
   @if (loading()) {
     <p class="loading-message">جاري تحميل المقال...</p>
   } @else {
 
     @if (article(); as art) {
+
       <header class="article-header">
         <button (click)="goBack()" class="back-button">← العودة</button>
         <h1 class="article-title">{{ art.title }}</h1>
@@ -14,42 +16,76 @@
       </header>
 
       @if (art.cover_image_url) {
-        <img  alt=" " [src]="art.cover_image_url" [alt]="art.title" class="cover-image">
+        <img alt=""
+          class="cover-image"
+          [src]="art.cover_image_url"
+          [alt]="art.title">
       }
 
+      <!-- ===== المقالات المرتبطة بملف ===== -->
       @if (art.is_link && art.article_link) {
-        @if (art.article_link.includes('docs.google.com')) {
-          <div class="document-viewer-wrapper">
-            <div class="iframe-controls">
-              <a [href]="art.article_link" target="_blank" rel="noopener noreferrer" class="control-btn">
-                🔗 فتح في نافذة جديدة
-              </a>
-            </div>
-            <div class="iframe-wrapper">
-              <iframe
-                class="document-iframe"
-                [src]="art.article_link + '?embedded=true' | safeUrl"
-                frameborder="0"
-                title="{{ art.title }}">
-              </iframe>
-            </div>
+
+        <div class="document-viewer-wrapper">
+
+          <div class="iframe-controls">
+            <a
+              [href]="art.article_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="control-btn">
+              🔗 فتح في نافذة جديدة
+            </a>
           </div>
-        } @else {
-          <div class="document-viewer-wrapper">
-            <ngx-doc-viewer
-              [url]="art.article_link"
-              viewer="google"
-              class="doc-viewer">
-            </ngx-doc-viewer>
-          </div>
-        }
-      } @else {
-        <article class="article-content" [innerHTML]="art.content"></article>
+
+          <!-- Google Docs (Word) -->
+          @if (isGoogleDoc(art.article_link)) {
+            <iframe
+              class="document-iframe"
+              [src]="art.article_link + '?embedded=true' | safeUrl"
+              frameborder="0"
+              title="{{ art.title }}">
+            </iframe>
+          }
+
+          <!-- Google Drive PDF -->
+        @else if (isGoogleDrive(art.article_link)) {
+  @if (getDrivePreviewUrl(art.article_link); as previewUrl) {
+    <iframe
+      class="document-iframe"
+      [src]="previewUrl | safeUrl"
+      frameborder="0"
+      title="{{ art.title }}">
+    </iframe>
+  }
+}
+
+          <!-- أي رابط آخر -->
+          @else {
+            <p class="unsupported-message">
+              لا يمكن عرض هذا الملف داخل الصفحة.
+              <a [href]="art.article_link" target="_blank">اضغط هنا للفتح</a>
+            </p>
+          }
+
+        </div>
+
       }
+
+      <!-- ===== مقال نصي عادي ===== -->
+      @else {
+        <article
+          class="article-content"
+          [innerHTML]="art.content | safeHtml">
+        </article>
+      }
+
     } @else {
       <p class="empty-message">
-        لم يتم العثور على المقال. <button (click)="goBack()" class="back-button">العودة</button>
+        لم يتم العثور على المقال.
+        <button (click)="goBack()" class="back-button">العودة</button>
       </p>
     }
+
   }
+
 </div>
