@@ -478,13 +478,14 @@ export class VideosManagerComponent implements OnInit {
     try {
       this.extractThumbnail();
 
+      // هنا يتم استبعاد (thumbnail) و (videos_categories) من البيانات المرسلة
+      // لأنها ليست أعمدة حقيقية في جدول videos
+      const { videos_categories, thumbnail, ...payload } = this.formData as any;
+
       if (this.isEditMode() && this.editingId) {
-        // حذف videos_categories من البيانات المرسلة لأنها ليست عموداً في جدول videos
-        const { videos_categories, ...payload } = this.formData as any;
-        // هنا يتم إرسال categorie_id المحدث مع الـ payload
         await this.adminService.updateVideo(this.editingId, payload);
       } else {
-        await this.adminService.createVideo(this.formData as any);
+        await this.adminService.createVideo(payload);
       }
 
       await this.loadVideos();
