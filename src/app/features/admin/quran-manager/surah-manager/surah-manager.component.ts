@@ -147,7 +147,7 @@ import { Surah, SurahFootnote } from '../../../../core/models/surah.model';
 
             <div class="form-row">
               <div class="form-group">
-                <label>الاسم بالإيطالية</label>
+                <label>لفظ بالإيطالية </label>
                 <input
                   type="text"
                   [(ngModel)]="formData.name_en"
@@ -157,7 +157,7 @@ import { Surah, SurahFootnote } from '../../../../core/models/surah.model';
               </div>
 
               <div class="form-group">
-                <label>الترجمة الإنجليزية</label>
+                <label>الاسم بالإيطالية 2 </label>
                 <input
                   type="text"
                   [(ngModel)]="formData.name_en_translation"

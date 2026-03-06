@@ -33,6 +33,9 @@ export class TafsirsManagerComponent implements OnInit {
   searchTerm = '';
   filterType = '';
   filterLang = '';
+  filterSurahId: number | null = null;
+  filterAyahId: number | null = null;
+  filterAyahs = signal<any[]>([]);
 
   showModal = signal(false);
   isEditMode = signal(false);
@@ -164,18 +167,22 @@ export class TafsirsManagerComponent implements OnInit {
         ...(mainTafsirs || []).map((t: any) => ({
           ...t,
           type: 'main',
+          surah_id: t.ayahs?.surahs?.id ?? t.ayahs?.surah_id,
           surah_name: t.ayahs?.surahs?.name_ar,
           verse_number: t.ayahs?.verse_number,
           text_uthmani: t.ayahs?.text_uthmani,
-          interpreter: t.interpreters
+          interpreter: t.interpreters,
+          ayahs: { ...t.ayahs, surah_id: t.ayahs?.surahs?.id ?? t.ayahs?.surah_id }
         })),
         ...(extraTafsirs || []).map((t: any) => ({
           ...t,
           type: 'extra',
+          surah_id: t.ayahs?.surahs?.id ?? t.ayahs?.surah_id,
           surah_name: t.ayahs?.surahs?.name_ar,
           verse_number: t.ayahs?.verse_number,
           text_uthmani: t.ayahs?.text_uthmani,
-          interpreter: t.interpreters
+          interpreter: t.interpreters,
+          ayahs: { ...t.ayahs, surah_id: t.ayahs?.surahs?.id ?? t.ayahs?.surah_id }
         }))
       ];
 
@@ -188,6 +195,26 @@ export class TafsirsManagerComponent implements OnInit {
       console.error('❌ خطأ في تحميل التفاسير:', error);
       this.notificationService.error('فشل تحميل التفاسير');
     }
+  }
+
+  async onFilterSurahChange() {
+    this.filterAyahId = null;
+    this.filterSurahId = this.filterSurahId ? Number(this.filterSurahId) : null;
+    if (!this.filterSurahId) {
+      this.filterAyahs.set([]);
+    } else {
+      try {
+        const { data } = await (this.supabaseService as any).supabase
+          .from('ayahs')
+          .select('id, verse_number')
+          .eq('surah_id', this.filterSurahId)
+          .order('verse_number');
+        this.filterAyahs.set(data || []);
+      } catch (error) {
+        console.error('Failed to load filter ayahs:', error);
+      }
+    }
+    this.filterTafsirs();
   }
 
   filterTafsirs() {
@@ -207,6 +234,16 @@ export class TafsirsManagerComponent implements OnInit {
 
     if (this.filterLang) {
       filtered = filtered.filter(t => t.language_code === this.filterLang);
+    }
+
+    if (this.filterSurahId) {
+      const sid = Number(this.filterSurahId);
+      filtered = filtered.filter(t => Number(t.surah_id) === sid);
+    }
+
+    if (this.filterAyahId) {
+      const aid = Number(this.filterAyahId);
+      filtered = filtered.filter(t => Number(t.ayah_id) === aid);
     }
 
     this.filteredTafsirs.set(filtered);

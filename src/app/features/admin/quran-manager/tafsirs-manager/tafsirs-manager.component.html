@@ -39,6 +39,22 @@
       <option value="en">إنجليزي</option>
     </select>
 
+    <select [(ngModel)]="filterSurahId" (change)="onFilterSurahChange()" class="filter-select">
+      <option [value]="null">كل السور</option>
+      @for (surah of surahs(); track surah.id) {
+        <option [value]="surah.id">
+          {{ surah.order_number }}. {{ surah.name_ar }}
+        </option>
+      }
+    </select>
+
+    <select [(ngModel)]="filterAyahId" (change)="filterTafsirs()" class="filter-select" [disabled]="!filterSurahId">
+      <option [value]="null">كل الآيات</option>
+      @for (ayah of filterAyahs(); track ayah.id) {
+        <option [value]="ayah.id">آية {{ ayah.verse_number }}</option>
+      }
+    </select>
+
     <span class="results-count">{{ filteredTafsirs().length }} تفسير</span>
   </div>
 
@@ -164,8 +180,8 @@
         <select [(ngModel)]="formData.interpreter_id" name="interpreter_id">
           <option [value]="null">-- بدون مفسر --</option>
           @for (interp of interpreters(); track interp.id) {
-            <option [value]="interp.id">
-              <!-- {{ interp.display_name_it || interp.short_name }} -->
+            <option [value]="interp.id" >
+              {{ interp.display_name_it || interp.short_name }}
             </option>
           }
         </select>
