@@ -1,61 +1,57 @@
-<!-- استبدل محتوى tafsirs-manager.component.html بهذا -->
+<!-- tafsirs-manager.component.html -->
 
 <div class="tafsirs-manager">
+
   <!-- Header -->
   <div class="page-header">
-    <h1>إدارة التفاسير</h1>
-    <div class="header-actions">
-      <button (click)="openAddModal()" class="btn-primary">
-        <i class="fas fa-plus"></i>
-        تفسير جديد
-      </button>
-      <button (click)="router.navigate(['/admin/quran'])" class="btn-secondary">
-        <i class="fas fa-arrow-right"></i>
-        رجوع
-      </button>
+    <div class="header-title">
+      <h1>إدارة التفاسير</h1>
+      <span class="header-count">{{ filteredGroups().length }} آية</span>
     </div>
+    <button (click)="router.navigate(['/admin/quran'])" class="btn-secondary">
+      <i class="fas fa-arrow-right"></i> رجوع
+    </button>
   </div>
 
   <!-- Filters -->
   <div class="filters-bar">
-    <input
-      type="search"
-      placeholder="بحث في التفاسير..."
-      [(ngModel)]="searchTerm"
-      (input)="filterTafsirs()"
-      class="search-input"
-    />
-
-    <select [(ngModel)]="filterType" (change)="filterTafsirs()" class="filter-select">
-      <option value="">كل الأنواع</option>
-      <option value="main">رئيسي</option>
-      <option value="extra">إضافي</option>
-    </select>
-
-    <select [(ngModel)]="filterLang" (change)="filterTafsirs()" class="filter-select">
-      <option value="">كل اللغات</option>
-      <option value="ar">عربي</option>
-      <option value="it">إيطالي</option>
-      <option value="en">إنجليزي</option>
-    </select>
+    <div class="filter-group search-group">
+      <i class="fas fa-search filter-icon"></i>
+      <input
+        type="search"
+        placeholder="بحث في الآيات والتفاسير..."
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+        class="search-input"
+      />
+    </div>
 
     <select [(ngModel)]="filterSurahId" (change)="onFilterSurahChange()" class="filter-select">
       <option [value]="null">كل السور</option>
       @for (surah of surahs(); track surah.id) {
-        <option [value]="surah.id">
-          {{ surah.order_number }}. {{ surah.name_ar }}
-        </option>
+        <option [value]="surah.id">{{ surah.order_number }}. {{ surah.name_ar }}</option>
       }
     </select>
 
-    <select [(ngModel)]="filterAyahId" (change)="filterTafsirs()" class="filter-select" [disabled]="!filterSurahId">
+    <select [(ngModel)]="filterAyahId" (change)="applyFilters()" class="filter-select" [disabled]="!filterSurahId">
       <option [value]="null">كل الآيات</option>
       @for (ayah of filterAyahs(); track ayah.id) {
         <option [value]="ayah.id">آية {{ ayah.verse_number }}</option>
       }
     </select>
 
-    <span class="results-count">{{ filteredTafsirs().length }} تفسير</span>
+    <select [(ngModel)]="filterType" (change)="applyFilters()" class="filter-select">
+      <option value="">كل الأنواع</option>
+      <option value="main">رئيسي</option>
+      <option value="extra">إضافي</option>
+    </select>
+
+    <select [(ngModel)]="filterLang" (change)="applyFilters()" class="filter-select">
+      <option value="">كل اللغات</option>
+      <option value="ar">عربي</option>
+      <option value="it">إيطالي</option>
+      <option value="en">إنجليزي</option>
+    </select>
   </div>
 
   <!-- Loading -->
@@ -64,204 +60,270 @@
       <div class="spinner"></div>
       <p>جاري تحميل التفاسير...</p>
     </div>
+  } @else if (filteredGroups().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-book-open"></i>
+      <p>لا توجد نتائج</p>
+    </div>
   } @else {
-    <!-- Tafsirs List -->
-    @if (filteredTafsirs().length === 0) {
-      <div class="empty-state">
-        <i class="fas fa-comments"></i>
-        <p>لا توجد تفاسير</p>
-      </div>
-    } @else {
-      <div class="tafsirs-list">
-        @for (tafsir of filteredTafsirs(); track tafsir.id) {
-          <div class="tafsir-card">
-            <div class="tafsir-header">
-              <div class="tafsir-badge" [class.main]="tafsir.type === 'main'" [class.extra]="tafsir.type === 'extra'">
-                {{ tafsir.type === 'main' ? 'رئيسي' : 'إضافي' }}
-              </div>
-              <div class="tafsir-meta">
-                <span class="surah-info">
-                  {{ tafsir.surah_name }} - آية {{ tafsir.verse_number }}
-                </span>
-                <span class="lang-badge" [class]="'lang-' + tafsir.language_code">
-                  {{ getLangName(tafsir.language_code) }}
-                </span>
-              </div>
-              <div class="actions">
-                <button (click)="editTafsir(tafsir)" class="btn-icon" title="تعديل">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button (click)="deleteTafsir(tafsir)" class="btn-icon btn-danger" title="حذف">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
+
+    <!-- Accordion List -->
+    <div class="accordion-list">
+      @for (group of filteredGroups(); track group.ayah_id) {
+        <div class="ayah-group" [class.is-open]="group.isOpen">
+
+          <!-- Ayah Header (clickable) -->
+          <div class="ayah-header" (click)="toggleGroup(group)">
+            <div class="ayah-location">
+              <span class="surah-badge">{{ group.surah_name }}</span>
+              <span class="verse-num">آية {{ group.verse_number }}</span>
             </div>
 
-            <div class="tafsir-content">
-              <div class="arabic-text">{{ tafsir.text_uthmani }}</div>
-              <div class="tafsir-text">
-                {{ tafsir.tafsir_text | slice:0:200 }}...
-              </div>
-              @if (tafsir.interpreter) {
-                <div class="interpreter-info">
-                  <i class="fas fa-user-graduate"></i>
-                  {{ tafsir.interpreter.display_name_it || tafsir.interpreter.short_name }}
-                </div>
+            <div class="ayah-text-preview">{{ group.text_uthmani }}</div>
+
+            <div class="ayah-meta">
+              <span class="tafsir-count">
+                <i class="fas fa-layer-group"></i>
+                {{ group.tafsirs.length }} تفسير
+              </span>
+              @if (getTafsirsByType(group, 'main').length > 0) {
+                <span class="type-pill main">رئيسي ×{{ getTafsirsByType(group, 'main').length }}</span>
               }
+              @if (getTafsirsByType(group, 'extra').length > 0) {
+                <span class="type-pill extra">إضافي ×{{ getTafsirsByType(group, 'extra').length }}</span>
+              }
+              <i class="fas fa-chevron-down chevron-icon" [class.rotated]="group.isOpen"></i>
             </div>
           </div>
-        }
-      </div>
-    }
+
+          <!-- Accordion Body -->
+          @if (group.isOpen) {
+            <div class="ayah-body">
+
+              <!-- Full Arabic Text -->
+              <div class="arabic-verse">{{ group.text_uthmani }}</div>
+
+              <!-- Tabs: main | extra -->
+              <div class="tafsirs-tabs">
+
+                <!-- Main Tafsirs -->
+                <div class="tab-section">
+                  <div class="tab-label main-label">
+                    <i class="fas fa-star"></i> التفاسير الرئيسية
+                    <span class="count-badge">{{ getTafsirsByType(group, 'main').length }}</span>
+                  </div>
+
+                  @for (tafsir of getTafsirsByType(group, 'main'); track tafsir.id) {
+                    <div class="tafsir-row" [class.editing]="tafsir.isEditing">
+
+                      @if (!tafsir.isEditing) {
+                        <!-- View Mode -->
+                        <div class="tafsir-view">
+                          <div class="tafsir-info-bar">
+                            <span class="lang-chip" [class]="'lang-' + tafsir.language_code">
+                              {{ getLangName(tafsir.language_code) }}
+                            </span>
+                            @if (tafsir.interpreter) {
+                              <span class="interpreter-chip">
+                                <i class="fas fa-user-graduate"></i>
+                                {{ getInterpreterName(tafsir.interpreter) }}
+                              </span>
+                            }
+                            <div class="tafsir-actions">
+                              <button (click)="startEdit(tafsir)" class="btn-icon" title="تعديل">
+                                <i class="fas fa-pen"></i>
+                              </button>
+                              <button (click)="confirmDeleteTafsir(tafsir, group)" class="btn-icon danger" title="حذف">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <p class="tafsir-body-text">{{ tafsir.tafsir_text }}</p>
+                        </div>
+                      } @else {
+                        <!-- Edit Mode (inline) -->
+                        <div class="tafsir-edit-form">
+                          <div class="edit-row">
+                            <select [(ngModel)]="tafsir.editLang" class="edit-select">
+                              <option value="ar">العربية</option>
+                              <option value="it">الإيطالية</option>
+                              <option value="en">الإنجليزية</option>
+                            </select>
+                            <select [(ngModel)]="tafsir.editInterpreterId" class="edit-select">
+                              <option [value]="null">بدون مفسر</option>
+                              @for (interp of interpreters(); track interp.id) {
+                                <option [value]="interp.id">{{ getInterpreterName(interp) }}</option>
+                              }
+                            </select>
+                          </div>
+                          <textarea
+                            [(ngModel)]="tafsir.editText"
+                            rows="8"
+                            class="edit-textarea"
+                            placeholder="نص التفسير..."
+                          ></textarea>
+                          <div class="edit-actions">
+                            <button (click)="cancelEdit(tafsir)" class="btn-cancel">إلغاء</button>
+                            <button (click)="saveEdit(tafsir)" class="btn-save" [disabled]="tafsir.saving">
+                              @if (tafsir.saving) { <span class="spinner-xs"></span> جاري الحفظ... }
+                              @else { <i class="fas fa-check"></i> حفظ }
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <!-- Divider -->
+                <div class="tab-divider"></div>
+
+                <!-- Extra Tafsirs -->
+                <div class="tab-section">
+                  <div class="tab-label extra-label">
+                    <i class="fas fa-plus-circle"></i> التفاسير الإضافية
+                    <span class="count-badge">{{ getTafsirsByType(group, 'extra').length }}</span>
+                  </div>
+
+                  @for (tafsir of getTafsirsByType(group, 'extra'); track tafsir.id) {
+                    <div class="tafsir-row" [class.editing]="tafsir.isEditing">
+
+                      @if (!tafsir.isEditing) {
+                        <div class="tafsir-view">
+                          <div class="tafsir-info-bar">
+                            <span class="lang-chip" [class]="'lang-' + tafsir.language_code">
+                              {{ getLangName(tafsir.language_code) }}
+                            </span>
+                            @if (tafsir.interpreter) {
+                              <span class="interpreter-chip">
+                                <i class="fas fa-user-graduate"></i>
+                                {{ getInterpreterName(tafsir.interpreter) }}
+                              </span>
+                            }
+                            @if (tafsir.source_name) {
+                              <span class="source-chip">
+                                <i class="fas fa-book"></i> {{ tafsir.source_name }}
+                              </span>
+                            }
+                            <span class="order-chip">#{{ tafsir.display_order }}</span>
+                            <div class="tafsir-actions">
+                              <button (click)="startEdit(tafsir)" class="btn-icon" title="تعديل">
+                                <i class="fas fa-pen"></i>
+                              </button>
+                              <button (click)="confirmDeleteTafsir(tafsir, group)" class="btn-icon danger" title="حذف">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <p class="tafsir-body-text">{{ tafsir.tafsir_text }}</p>
+                        </div>
+                      } @else {
+                        <div class="tafsir-edit-form">
+                          <div class="edit-row">
+                            <select [(ngModel)]="tafsir.editLang" class="edit-select">
+                              <option value="ar">العربية</option>
+                              <option value="it">الإيطالية</option>
+                              <option value="en">الإنجليزية</option>
+                            </select>
+                            <select [(ngModel)]="tafsir.editInterpreterId" class="edit-select">
+                              <option [value]="null">بدون مفسر</option>
+                              @for (interp of interpreters(); track interp.id) {
+                                <option [value]="interp.id">{{ getInterpreterName(interp) }}</option>
+                              }
+                            </select>
+                            <input type="text" [(ngModel)]="tafsir.editSourceName" class="edit-input" placeholder="المصدر" />
+                            <input type="number" [(ngModel)]="tafsir.editDisplayOrder" class="edit-input small" placeholder="ترتيب" min="0" />
+                          </div>
+                          <textarea
+                            [(ngModel)]="tafsir.editText"
+                            rows="8"
+                            class="edit-textarea"
+                            placeholder="نص التفسير..."
+                          ></textarea>
+                          <div class="edit-actions">
+                            <button (click)="cancelEdit(tafsir)" class="btn-cancel">إلغاء</button>
+                            <button (click)="saveEdit(tafsir)" class="btn-save" [disabled]="tafsir.saving">
+                              @if (tafsir.saving) { <span class="spinner-xs"></span> جاري الحفظ... }
+                              @else { <i class="fas fa-check"></i> حفظ }
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Add New Tafsir Button -->
+              <div class="add-section">
+                @if (!group.showAddForm) {
+                  <button (click)="toggleAddForm(group)" class="btn-add-tafsir">
+                    <i class="fas fa-plus"></i> إضافة تفسير لهذه الآية
+                  </button>
+                } @else {
+                  <!-- Add Form -->
+                  <div class="add-form">
+                    <div class="add-form-header">
+                      <span>تفسير جديد</span>
+                      <button (click)="toggleAddForm(group)" class="close-add-btn">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                    <div class="edit-row">
+                      <select [(ngModel)]="group.newTafsir!.type" class="edit-select">
+                        <option value="main" [disabled]="getTafsirsByType(group, 'main').length > 0">
+                          رئيسي {{ getTafsirsByType(group, 'main').length > 0 ? '(موجود)' : '' }}
+                        </option>
+                        <option value="extra">إضافي</option>
+                      </select>
+                      <select [(ngModel)]="group.newTafsir!.language_code" class="edit-select">
+                        <option value="ar">العربية</option>
+                        <option value="it">الإيطالية</option>
+                        <option value="en">الإنجليزية</option>
+                      </select>
+                      <select [(ngModel)]="group.newTafsir!.interpreter_id" class="edit-select">
+                        <option [value]="null">بدون مفسر</option>
+                        @for (interp of interpreters(); track interp.id) {
+                          <option [value]="interp.id">{{ getInterpreterName(interp) }}</option>
+                        }
+                      </select>
+                      @if (group.newTafsir!.type === 'extra') {
+                        <input type="text" [(ngModel)]="group.newTafsir!.source_name" class="edit-input" placeholder="المصدر" />
+                        <input type="number" [(ngModel)]="group.newTafsir!.display_order" class="edit-input small" placeholder="ترتيب" min="0" />
+                      }
+                    </div>
+                    <textarea
+                      [(ngModel)]="group.newTafsir!.tafsir_text"
+                      rows="8"
+                      class="edit-textarea"
+                      placeholder="اكتب نص التفسير هنا..."
+                    ></textarea>
+                    <div class="edit-actions">
+                      <button (click)="toggleAddForm(group)" class="btn-cancel">إلغاء</button>
+                      <button (click)="saveNewTafsir(group)" class="btn-save" [disabled]="group.addingSaving">
+                        @if (group.addingSaving) { <span class="spinner-xs"></span> جاري الإضافة... }
+                        @else { <i class="fas fa-plus"></i> إضافة }
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+    </div>
   }
 </div>
 
-<!-- Add/Edit Modal -->
-@if (showModal()) {
-  <div class="modal-backdrop" (click)="closeModal()"></div>
-  <div class="modal large-modal">
-    <div class="modal-header">
-      <h3>{{ isEditMode() ? 'تعديل التفسير' : 'تفسير جديد' }}</h3>
-      <button class="close-btn" (click)="closeModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <form (ngSubmit)="onSubmit()" class="modal-body">
-      <!-- Type Selection -->
-      <div class="form-group">
-        <label class="required">نوع التفسير</label>
-        <select [(ngModel)]="formData.type" name="type" required [disabled]="isEditMode()">
-          <option value="">-- اختر النوع --</option>
-          <option value="main">رئيسي</option>
-          <option value="extra">إضافي</option>
-        </select>
-      </div>
-
-      <!-- Surah and Ayah Selection -->
-      <div class="form-row">
-        <div class="form-group">
-          <label class="required">السورة</label>
-          <select
-            [(ngModel)]="selectedSurahId"
-            name="surah"
-            required
-            (change)="onSurahChange()"
-            [disabled]="isEditMode()">
-            <option [value]="null">-- اختر السورة --</option>
-            @for (surah of surahs(); track surah.id) {
-              <option [value]="surah.id">
-                {{ surah.order_number }}. {{ surah.name_ar }}
-              </option>
-            }
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="required">رقم الآية</label>
-          <select
-            [(ngModel)]="formData.ayah_id"
-            name="ayah_id"
-            required
-            [disabled]="!selectedSurahId || isEditMode()">
-            <option [value]="null">-- اختر الآية --</option>
-            @for (ayah of availableAyahs(); track ayah.id) {
-              <option [value]="ayah.id">
-                آية {{ ayah.verse_number }}
-              </option>
-            }
-          </select>
-        </div>
-      </div>
-
-      <!-- Interpreter -->
-      <div class="form-group">
-        <label>المفسر (اختياري)</label>
-        <select [(ngModel)]="formData.interpreter_id" name="interpreter_id">
-          <option [value]="null">-- بدون مفسر --</option>
-          @for (interp of interpreters(); track interp.id) {
-            <option [value]="interp.id" >
-              {{ interp.display_name_it || interp.short_name }}
-            </option>
-          }
-        </select>
-      </div>
-
-      <!-- Language -->
-      <div class="form-group">
-        <label class="required">اللغة</label>
-        <select [(ngModel)]="formData.language_code" name="language_code" required>
-          <option value="ar">العربية</option>
-          <option value="it">الإيطالية</option>
-          <option value="en">الإنجليزية</option>
-        </select>
-      </div>
-
-      <!-- Tafsir Text -->
-      <div class="form-group">
-        <label class="required">نص التفسير</label>
-        <textarea
-          [(ngModel)]="formData.tafsir_text"
-          name="tafsir_text"
-          rows="15"
-          required
-          placeholder="اكتب نص التفسير هنا..."
-        ></textarea>
-      </div>
-
-      <!-- Extra Tafsir Fields -->
-      @if (formData.type === 'extra') {
-        <div class="form-row">
-          <div class="form-group">
-            <label>اسم المصدر (اختياري)</label>
-            <input
-              type="text"
-              [(ngModel)]="formData.source_name"
-              name="source_name"
-              placeholder="اسم الكتاب أو المصدر"
-            />
-          </div>
-
-          <div class="form-group">
-            <label>ترتيب العرض</label>
-            <input
-              type="number"
-              [(ngModel)]="formData.display_order"
-              name="display_order"
-              min="0"
-            />
-          </div>
-        </div>
-      }
-
-      <!-- Submit Buttons -->
-      <div class="modal-footer">
-        <button type="button" (click)="closeModal()" class="btn-secondary">
-          إلغاء
-        </button>
-        <button type="submit" class="btn-primary" [disabled]="saving()">
-          @if (saving()) {
-            <span class="spinner-sm"></span>
-            جاري الحفظ...
-          } @else {
-            <i class="fas fa-save"></i>
-            حفظ
-          }
-        </button>
-      </div>
-    </form>
-  </div>
-}
-
-<!-- Delete Confirmation -->
+<!-- Delete Confirmation Modal -->
 @if (tafsirToDelete()) {
   <div class="modal-backdrop" (click)="cancelDelete()"></div>
   <div class="modal confirm-modal">
     <div class="modal-header">
       <h3>تأكيد الحذف</h3>
-      <button class="close-btn" (click)="cancelDelete()">
-        <i class="fas fa-times"></i>
-      </button>
+      <button class="close-btn" (click)="cancelDelete()"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
       <p>هل أنت متأكد من حذف هذا التفسير؟</p>
@@ -269,13 +331,9 @@
     </div>
     <div class="modal-footer">
       <button (click)="cancelDelete()" class="btn-secondary">إلغاء</button>
-      <button (click)="confirmDelete()" class="btn-danger" [disabled]="deleting()">
-        @if (deleting()) {
-          <span class="spinner-sm"></span>
-          جاري الحذف...
-        } @else {
-          حذف
-        }
+      <button (click)="doDelete()" class="btn-danger" [disabled]="deleting()">
+        @if (deleting()) { <span class="spinner-xs"></span> جاري الحذف... }
+        @else { حذف }
       </button>
     </div>
   </div>

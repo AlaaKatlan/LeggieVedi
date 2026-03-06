@@ -1,9 +1,22 @@
-// src/app/features/admin/quran-manager/tafsirs-manager/tafsirs-manager.component.scss
+// tafsirs-manager.component.scss
+
+$primary: #01579b;
+$primary-light: #e3f2fd;
+$success: #10b981;
+$danger: #ef4444;
+$extra-color: #8b5cf6;
+$border: #e2e8f0;
+$text-dark: #0f172a;
+$text-mid: #334155;
+$text-light: #64748b;
 
 .tafsirs-manager {
   max-width: 1400px;
   margin: 0 auto;
+  padding-bottom: 4rem;
 }
+
+// ==================== Header ====================
 
 .page-header {
   display: flex;
@@ -11,103 +24,87 @@
   align-items: center;
   margin-bottom: 2rem;
 
-  h1 {
-    font-size: 2rem;
-    color: #0f172a;
-    margin: 0;
-  }
-
-  .header-actions {
+  .header-title {
     display: flex;
+    align-items: center;
     gap: 1rem;
+
+    h1 {
+      font-size: 2rem;
+      color: $text-dark;
+      margin: 0;
+    }
+  }
+
+  .header-count {
+    background: $primary-light;
+    color: $primary;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
   }
 }
 
-.btn-primary, .btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #01579b, #00897b);
-  color: white;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(1, 87, 155, 0.3);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-.btn-secondary {
-  background: #e2e8f0;
-  color: #475569;
-
-  &:hover {
-    background: #cbd5e1;
-  }
-}
+// ==================== Filters ====================
 
 .filters-bar {
   background: white;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   border-radius: 1rem;
   margin-bottom: 2rem;
   display: flex;
-  gap: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  gap: 0.75rem;
   flex-wrap: wrap;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid $border;
+}
+
+.filter-group {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $text-light;
+  pointer-events: none;
 }
 
 .search-input {
-  flex: 1;
-  min-width: 250px;
-  padding: 0.75rem 1rem;
-  border: 2px solid #e2e8f0;
+  width: 100%;
+  padding: 0.7rem 2.5rem 0.7rem 1rem;
+  border: 2px solid $border;
   border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
 
   &:focus {
     outline: none;
-    border-color: #01579b;
-    box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.1);
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.1);
   }
 }
 
 .filter-select {
-  padding: 0.75rem 1rem;
-  border: 2px solid #e2e8f0;
+  padding: 0.7rem 1rem;
+  border: 2px solid $border;
   border-radius: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
+  font-size: 0.95rem;
   background: white;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  transition: border-color 0.2s;
 
-  &:focus {
-    outline: none;
-    border-color: #01579b;
-  }
+  &:focus { outline: none; border-color: $primary; }
+  &:disabled { background: #f8fafc; cursor: not-allowed; color: $text-light; }
 }
 
-.results-count {
-  display: flex;
-  align-items: center;
-  color: #64748b;
-  font-weight: 600;
-  white-space: nowrap;
-}
+// ==================== States ====================
 
 .loading-state, .empty-state {
   display: flex;
@@ -120,374 +117,549 @@
   border-radius: 1rem;
   padding: 3rem;
 
-  i {
-    font-size: 4rem;
-    color: #cbd5e1;
-  }
-
-  p {
-    font-size: 1.25rem;
-    color: #64748b;
-  }
+  i { font-size: 3.5rem; color: #cbd5e1; }
+  p { font-size: 1.1rem; color: $text-light; }
 }
 
 .spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid #e2e8f0;
-  border-top-color: #01579b;
+  width: 50px; height: 50px;
+  border: 4px solid $border;
+  border-top-color: $primary;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.spinner-xs {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-left: 4px;
 }
 
-.tafsirs-list {
-  display: grid;
-  gap: 1.5rem;
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ==================== Accordion ====================
+
+.accordion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.tafsir-card {
+.ayah-group {
   background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-  border-right: 4px solid #01579b;
+  border-radius: 0.875rem;
+  border: 1px solid $border;
+  overflow: hidden;
+  transition: box-shadow 0.2s, border-color 0.2s;
 
-  &:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    transform: translateX(-5px);
+  &.is-open {
+    border-color: $primary;
+    box-shadow: 0 4px 20px rgba($primary, 0.1);
+  }
+
+  &:not(.is-open):hover {
+    border-color: #94a3b8;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
   }
 }
 
-.tafsir-header {
+.ayah-header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
   flex-wrap: wrap;
+  gap: 0.75rem;
+
+  &:hover { background: #f8fafc; }
 }
 
-.tafsir-badge {
-  padding: 0.375rem 0.875rem;
-  border-radius: 1rem;
-  font-size: 0.875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-
-  &.main {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
-  }
-
-  &.extra {
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-  }
-}
-
-.tafsir-meta {
-  flex: 1;
+.ayah-location {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.surah-info {
-  font-weight: 600;
-  color: #334155;
-}
-
-.lang-badge {
-  padding: 0.25rem 0.625rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-
-  &.lang-ar {
-    background: #dcfce7;
-    color: #166534;
-  }
-
-  &.lang-it {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-
-  &.lang-en {
-    background: #fef3c7;
-    color: #92400e;
-  }
-}
-
-.actions {
-  display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.surah-badge {
+  background: $primary-light;
+  color: $primary;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 1rem;
+  white-space: nowrap;
+}
+
+.verse-num {
+  font-size: 0.85rem;
+  color: $text-light;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ayah-text-preview {
+  flex: 1;
+  font-family: 'Amiri Quran', serif;
+  font-size: 1.2rem;
+  color: $text-dark;
+  direction: rtl;
+  text-align: right;
+  min-width: 0;
+  word-break: break-word;
+  line-height: 1.9;
+}
+
+.ayah-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.tafsir-count {
+  font-size: 0.8rem;
+  color: $text-light;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  i { font-size: 0.75rem; }
+}
+
+.type-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+
+  &.main { background: #dcfce7; color: #166534; }
+  &.extra { background: #ede9fe; color: #5b21b6; }
+}
+
+.chevron-icon {
+  color: $text-light;
+  font-size: 0.85rem;
+  transition: transform 0.25s ease;
+
+  &.rotated { transform: rotate(180deg); }
+}
+
+// ==================== Accordion Body ====================
+
+.ayah-body {
+  border-top: 2px solid $border;
+  padding: 1.5rem;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.arabic-verse {
+  font-family: 'Amiri Quran', serif;
+  font-size: 1.6rem;
+  line-height: 2.2;
+  text-align: right;
+  direction: rtl;
+  color: $text-dark;
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border-radius: 0.625rem;
+  border-right: 4px solid $primary;
+  margin-bottom: 1.5rem;
+}
+
+// ==================== Tafsirs Tabs ====================
+
+.tafsirs-tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+  }
+}
+
+.tab-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
+
+  .count-badge {
+    margin-right: auto;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+  }
+
+  &.main-label {
+    color: $success;
+    border-color: $success;
+
+    .count-badge { background: #dcfce7; color: #166534; }
+  }
+
+  &.extra-label {
+    color: $extra-color;
+    border-color: $extra-color;
+
+    .count-badge { background: #ede9fe; color: #5b21b6; }
+  }
+}
+
+.tab-divider {
+  width: 1px;
+  background: $border;
+  flex-shrink: 0;
+
+  @media (max-width: 900px) {
+    width: 100%; height: 1px;
+  }
+}
+
+// ==================== Tafsir Row ====================
+
+.tafsir-row {
+  border: 1px solid $border;
+  border-radius: 0.625rem;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: border-color 0.2s;
+
+  &.editing {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.08);
+  }
+}
+
+.tafsir-view {
+  padding: 0.875rem 1rem;
+}
+
+.tafsir-info-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.lang-chip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.375rem;
+
+  &.lang-ar { background: #dcfce7; color: #166534; }
+  &.lang-it { background: #dbeafe; color: #1e40af; }
+  &.lang-en { background: #fef3c7; color: #92400e; }
+}
+
+.interpreter-chip, .source-chip {
+  font-size: 0.78rem;
+  color: $text-light;
+  display: flex; align-items: center; gap: 0.3rem;
+
+  i { font-size: 0.7rem; color: $primary; }
+}
+
+.order-chip {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  background: #f1f5f9;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.tafsir-actions {
+  display: flex;
+  gap: 0.375rem;
+  margin-right: auto;
 }
 
 .btn-icon {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
   background: #f1f5f9;
-  border: none;
-  border-radius: 0.5rem;
-  color: #475569;
+  border: none; border-radius: 0.375rem;
+  color: $text-light;
   cursor: pointer;
-  transition: all 0.3s ease;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+
+  &:hover { background: $primary; color: white; }
+  &.danger:hover { background: $danger; color: white; }
+}
+
+.tafsir-body-text {
+  color: $text-mid;
+  line-height: 1.8;
+  font-size: 0.95rem;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+// ==================== Inline Edit ====================
+
+.tafsir-edit-form {
+  padding: 1rem;
+  background: #f8fafc;
+}
+
+.edit-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.edit-select {
+  flex: 1; min-width: 130px;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid $border;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  background: white;
+
+  &:focus { outline: none; border-color: $primary; }
+}
+
+.edit-input {
+  flex: 1; min-width: 130px;
+  padding: 0.5rem 0.75rem;
+  border: 1.5px solid $border;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+
+  &.small { max-width: 90px; flex: 0 0 90px; }
+  &:focus { outline: none; border-color: $primary; }
+}
+
+.edit-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid $border;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  line-height: 1.7;
+  box-sizing: border-box;
+  margin-bottom: 0.75rem;
+
+  &:focus { outline: none; border-color: $primary; box-shadow: 0 0 0 3px rgba($primary, 0.08); }
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.btn-cancel {
+  padding: 0.5rem 1.25rem;
+  background: #e2e8f0;
+  color: $text-mid;
+  border: none; border-radius: 0.5rem;
+  font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: #cbd5e1; }
+}
+
+.btn-save {
+  padding: 0.5rem 1.25rem;
+  background: $primary;
+  color: white;
+  border: none; border-radius: 0.5rem;
+  font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) { background: darken($primary, 8%); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ==================== Add Section ====================
+
+.add-section {
+  border-top: 1px dashed $border;
+  padding-top: 1.25rem;
+}
+
+.btn-add-tafsir {
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  border: 2px dashed #94a3b8;
+  border-radius: 0.625rem;
+  color: $text-light;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  transition: all 0.2s;
 
   &:hover {
-    background: #01579b;
-    color: white;
-  }
-
-  &.btn-danger:hover {
-    background: #ef4444;
+    border-color: $primary;
+    color: $primary;
+    background: $primary-light;
   }
 }
 
-.tafsir-content {
-  .arabic-text {
-    font-family: 'Amiri Quran', serif;
-    font-size: 1.5rem;
-    line-height: 2;
-    text-align: right;
-    direction: rtl;
-    color: #0f172a;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background: #f8fafc;
-    border-radius: 0.5rem;
-    border-right: 4px solid #01579b;
-  }
-
-  .tafsir-text {
-    color: #475569;
-    line-height: 1.8;
-    margin-bottom: 1rem;
-  }
-
-  .interpreter-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #64748b;
-    font-size: 0.9rem;
-
-    i {
-      color: #01579b;
-    }
-  }
+.add-form {
+  border: 2px solid $primary;
+  border-radius: 0.875rem;
+  overflow: hidden;
 }
+
+.add-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: $primary-light;
+  color: $primary;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.close-add-btn {
+  background: none; border: none;
+  color: $primary; cursor: pointer;
+  font-size: 1rem;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0.375rem;
+  transition: background 0.2s;
+
+  &:hover { background: rgba($primary, 0.15); }
+}
+
+.add-form > .edit-row,
+.add-form > .edit-textarea,
+.add-form > .edit-actions {
+  padding: 0.75rem 1rem 0;
+  background: #f8fafc;
+}
+
+.add-form > .edit-actions {
+  padding-bottom: 1rem;
+}
+
+// ==================== Modals ====================
 
 .modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
   z-index: 9998;
   animation: fadeIn 0.2s ease;
 }
 
 .modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   background: white;
   border-radius: 1rem;
-  width: 90%;
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
+  width: 90%; max-width: 480px;
   z-index: 9999;
-  animation: slideUp 0.3s ease;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-
-  &.large-modal {
-    max-width: 1000px;
-  }
-
-  &.confirm-modal {
-    max-width: 500px;
-  }
+  animation: slideUp 0.25s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -40%);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
+  from { opacity: 0; transform: translate(-50%, -42%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid $border;
 
-  h3 {
-    margin: 0;
-    color: #0f172a;
-    font-size: 1.5rem;
-  }
+  h3 { margin: 0; font-size: 1.25rem; color: $text-dark; }
 
   .close-btn {
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 1.5rem;
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
+    background: none; border: none;
+    color: $text-light; font-size: 1.25rem;
+    cursor: pointer; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+    &:hover { background: #f1f5f9; color: $text-dark; }
   }
 }
 
 .modal-body {
   padding: 1.5rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-
-  label {
-    display: block;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-
-    &.required::after {
-      content: ' *';
-      color: #ef4444;
-    }
-  }
-
-  input, textarea, select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-family: inherit;
-    transition: all 0.3s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #01579b;
-      box-shadow: 0 0 0 3px rgba(1, 87, 155, 0.1);
-    }
-
-    &:disabled {
-      background: #f1f5f9;
-      cursor: not-allowed;
-    }
-  }
-
-  textarea {
-    resize: vertical;
-    line-height: 1.6;
-  }
-
-  small {
-    display: block;
-    margin-top: 0.5rem;
-    color: #64748b;
-    font-size: 0.85rem;
-  }
+  p { margin: 0 0 0.5rem; color: $text-mid; }
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
-  padding: 1.5rem;
-  border-top: 1px solid #e2e8f0;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $border;
+}
+
+.warning { color: #f59e0b; font-weight: 600; }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: #e2e8f0; color: $text-mid;
+  border: none; border-radius: 0.5rem;
+  font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+  &:hover { background: #cbd5e1; }
 }
 
 .btn-danger {
-  padding: 0.75rem 1.5rem;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  &:hover:not(:disabled) {
-    background: #dc2626;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  padding: 0.65rem 1.25rem;
+  background: $danger; color: white;
+  border: none; border-radius: 0.5rem;
+  font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 0.4rem;
+  transition: background 0.2s;
+  &:hover:not(:disabled) { background: #dc2626; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
-.warning {
-  color: #f59e0b;
-  font-weight: 600;
-}
-
-.spinner-sm {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
+// ==================== Responsive ====================
 
 @media (max-width: 768px) {
-  .filters-bar {
-    flex-direction: column;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .modal {
-    width: 95%;
-    max-height: 95vh;
-  }
+  .filters-bar { flex-direction: column; }
+  .ayah-header { padding: 0.875rem 1rem; }
+  .ayah-text-preview { font-size: 1rem; }
+  .ayah-body { padding: 1rem; }
+  .arabic-verse { font-size: 1.3rem; }
+  .edit-row { flex-direction: column; }
 }
