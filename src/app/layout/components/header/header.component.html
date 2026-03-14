@@ -3,12 +3,41 @@
     <a routerLink="/" class="navbar-brand">Nabil Al-Mahaini</a>
 
     <ul class="navbar-nav desktop-nav">
-      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
-      <li><a routerLink="/quran" routerLinkActive="active">Qur'an</a></li>
-      <li><a routerLink="/gallery" routerLinkActive="active">Gallery</a></li>
-      <li><a routerLink="/blog" routerLinkActive="active">Miscellaneous Writing</a></li>
-      <li><a routerLink="/movies" routerLinkActive="active">Movies</a></li>
-      <li><a routerLink="/publications" routerLinkActive="active">Publications</a></li>
+      <li>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          Home
+        </a>
+      </li>
+      <li>
+        <a routerLink="/quran" routerLinkActive="active">
+          <span class="nav-ar">القرآن الكريم</span>
+          <span class="nav-en">Il Glorioso Corano</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/gallery" routerLinkActive="active">
+          <span class="nav-ar">لوحاتي</span>
+          <span class="nav-en">Art Gallery</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/blog" routerLinkActive="active">
+          <span class="nav-ar">وجدانيات وكتابات مختلفة</span>
+          <span class="nav-en">Miscellaneous Writing</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/movies" routerLinkActive="active">
+          <span class="nav-ar">أفلامي</span>
+          <span class="nav-en">My Films</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/publications" routerLinkActive="active">
+          <span class="nav-ar">مشورات وترجمات</span>
+          <span class="nav-en">Publications</span>
+        </a>
+      </li>
     </ul>
 
     <div class="header-actions">
@@ -34,13 +63,39 @@
   @if (isMobileMenuOpen()) {
   <div class="mobile-nav">
     <ul>
-      <li><a routerLink="/" (click)="isMobileMenuOpen.set(false)">Home</a></li>
-      <li><a routerLink="/quran" (click)="isMobileMenuOpen.set(false)">Qur'an</a></li>
-      <li><a routerLink="/gallery" (click)="isMobileMenuOpen.set(false)">Gallery</a></li>
-      <li><a routerLink="/blog" routerLinkActive="active">Miscellaneous Writing</a></li>
-
-      <li><a routerLink="/movies" (click)="isMobileMenuOpen.set(false)">Movies</a></li>
-      <li><a routerLink="/publications" routerLinkActive="active">Publications</a></li>
+      <li>
+        <a routerLink="/" (click)="isMobileMenuOpen.set(false)">Home</a>
+      </li>
+      <li>
+        <a routerLink="/quran" (click)="isMobileMenuOpen.set(false)">
+          <span class="nav-ar">القرآن الكريم</span>
+          <span class="nav-en">Il Glorioso Corano</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/gallery" (click)="isMobileMenuOpen.set(false)">
+          <span class="nav-ar">لوحاتي</span>
+          <span class="nav-en">Art Gallery</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/blog" (click)="isMobileMenuOpen.set(false)">
+          <span class="nav-ar">وجدانيات وكتابات مختلفة</span>
+          <span class="nav-en">Miscellaneous Writing</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/movies" (click)="isMobileMenuOpen.set(false)">
+          <span class="nav-ar">أفلامي</span>
+          <span class="nav-en">My Films</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/publications" (click)="isMobileMenuOpen.set(false)">
+          <span class="nav-ar">مشورات وترجمات</span>
+          <span class="nav-en">Publications</span>
+        </a>
+      </li>
     </ul>
   </div>
   }
