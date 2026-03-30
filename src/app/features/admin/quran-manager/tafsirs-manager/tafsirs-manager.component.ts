@@ -70,11 +70,8 @@ export class TafsirsManagerComponent implements OnInit {
   deleting = signal(false);
 
   async ngOnInit() {
-    await this.loadData();
-  }
-
-  async loadData() {
     try {
+      // 1. جلب قائمة السور والمفسرين أولاً
       const surahsData = await this.supabaseService.getAllSurahs();
       this.surahs.set(surahsData);
 
@@ -82,16 +79,44 @@ export class TafsirsManagerComponent implements OnInit {
         .from('interpreters').select('*').order('short_name');
       if (interpretersData) this.interpreters.set(interpretersData);
 
-      await this.loadTafsirs();
+      // 2. تحميل تفاسير سورة الفاتحة افتراضياً
+      if (surahsData && surahsData.length > 0) {
+        this.filterSurahId = surahsData[0].id;
+        await this.onFilterSurahChange();
+      } else {
+        this.loading.set(false);
+      }
     } catch (error) {
-      this.notificationService.error('فشل تحميل البيانات');
-    } finally {
+      this.notificationService.error('فشل تحميل البيانات الأساسية');
       this.loading.set(false);
     }
   }
 
-  async loadTafsirs() {
+  async onFilterSurahChange() {
+    this.filterAyahId = null;
+    this.filterSurahId = this.filterSurahId ? Number(this.filterSurahId) : null;
+
+    if (!this.filterSurahId) {
+      this.filterAyahs.set([]);
+      this.allGroups.set([]);
+      this.filteredGroups.set([]);
+    } else {
+      // جلب الآيات الخاصة بالسورة المختارة لفلتر الآيات
+      const { data } = await (this.supabaseService as any).supabase
+        .from('ayahs').select('id, verse_number')
+        .eq('surah_id', this.filterSurahId).order('verse_number');
+      this.filterAyahs.set(data || []);
+
+      // جلب التفاسير
+      await this.loadTafsirs(this.filterSurahId);
+    }
+
+    this.applyFilters();
+  }
+
+  async loadTafsirs(surahId: number) {
     try {
+      this.loading.set(true);
       const selectQuery = `
         id, ayah_id, tafsir_text, language_code, interpreter_id,
         interpreters ( id, short_name, display_name_ar, display_name_en, display_name_it, language_code ),
@@ -101,16 +126,20 @@ export class TafsirsManagerComponent implements OnInit {
         )
       `;
 
+      // تمت إضافة limit(5000) كحماية أمان للسور الطويلة مثل البقرة
       const [mainRes, extraRes] = await Promise.all([
         (this.supabaseService as any).supabase
           .from('tafsir_main').select(selectQuery)
-          .order('ayahs(surah_id)', { ascending: true })
-          .order('ayahs(verse_number)', { ascending: true }),
+          .eq('ayahs.surah_id', surahId)
+          .order('ayahs(verse_number)', { ascending: true })
+          .limit(5000),
+
         (this.supabaseService as any).supabase
           .from('tafsir_extra').select(`${selectQuery}, source_name, display_order`)
-          .order('ayahs(surah_id)', { ascending: true })
+          .eq('ayahs.surah_id', surahId)
           .order('ayahs(verse_number)', { ascending: true })
-          .order('display_order', { ascending: true })
+          .order('display_order', { ascending: true, nullsFirst: true })
+          .limit(5000)
       ]);
 
       if (mainRes.error) throw mainRes.error;
@@ -153,16 +182,16 @@ export class TafsirsManagerComponent implements OnInit {
         });
       });
 
-      groups.sort((a, b) =>
-        a.surah_order !== b.surah_order
-          ? a.surah_order - b.surah_order
-          : a.verse_number - b.verse_number
-      );
+      // ترتيب تصاعدي حسب رقم الآية
+      groups.sort((a, b) => a.verse_number - b.verse_number);
 
       this.allGroups.set(groups);
       this.filteredGroups.set(groups);
     } catch (error) {
+      console.error(error);
       this.notificationService.error('فشل تحميل التفاسير');
+    } finally {
+      this.loading.set(false);
     }
   }
 
@@ -170,21 +199,7 @@ export class TafsirsManagerComponent implements OnInit {
     return { type: 'main', tafsir_text: '', language_code: 'it', interpreter_id: null, source_name: '', display_order: 0 };
   }
 
-  // ==================== فلاتر ====================
-
-  async onFilterSurahChange() {
-    this.filterAyahId = null;
-    this.filterSurahId = this.filterSurahId ? Number(this.filterSurahId) : null;
-    if (!this.filterSurahId) {
-      this.filterAyahs.set([]);
-    } else {
-      const { data } = await (this.supabaseService as any).supabase
-        .from('ayahs').select('id, verse_number')
-        .eq('surah_id', this.filterSurahId).order('verse_number');
-      this.filterAyahs.set(data || []);
-    }
-    this.applyFilters();
-  }
+  // ==================== الفلاتر ====================
 
   applyFilters() {
     let filtered = this.allGroups();
@@ -197,6 +212,7 @@ export class TafsirsManagerComponent implements OnInit {
         g.tafsirs.some(t => t.tafsir_text?.toLowerCase().includes(term))
       );
     }
+    // فلتر السورة تم تطبيقه مسبقاً من الباك إند، لذا هذا الخط للضمان فقط
     if (this.filterSurahId) {
       const sid = Number(this.filterSurahId);
       filtered = filtered.filter(g => Number(g.surah_id) === sid);
@@ -215,7 +231,7 @@ export class TafsirsManagerComponent implements OnInit {
     this.filteredGroups.set(filtered);
   }
 
-  // ==================== Accordion ====================
+  // ==================== التنقل والتعديل ====================
 
   toggleGroup(group: AyahGroup) {
     group.isOpen = !group.isOpen;
@@ -224,8 +240,6 @@ export class TafsirsManagerComponent implements OnInit {
       group.tafsirs.forEach(t => { t.isEditing = false; });
     }
   }
-
-  // ==================== Inline Edit ====================
 
   startEdit(tafsir: TafsirItem) {
     tafsir.isEditing = true;
@@ -271,7 +285,7 @@ export class TafsirsManagerComponent implements OnInit {
     }
   }
 
-  // ==================== إضافة ====================
+  // ==================== الإضافة والحذف ====================
 
   toggleAddForm(group: AyahGroup) {
     group.showAddForm = !group.showAddForm;
@@ -286,7 +300,6 @@ export class TafsirsManagerComponent implements OnInit {
     if (!nt.type) { this.notificationService.error('اختر نوع التفسير'); return; }
     if (!nt.tafsir_text?.trim()) { this.notificationService.error('نص التفسير مطلوب'); return; }
 
-    // منع إضافة تفسير رئيسي ثانٍ
     if (nt.type === 'main' && group.tafsirs.some(t => t.type === 'main')) {
       this.notificationService.error('⚠️ يوجد تفسير رئيسي لهذه الآية — يمكن إضافة تفسير إضافي فقط');
       return;
@@ -323,8 +336,6 @@ export class TafsirsManagerComponent implements OnInit {
     }
   }
 
-  // ==================== حذف ====================
-
   confirmDeleteTafsir(tafsir: TafsirItem, group: AyahGroup) {
     this.tafsirToDelete.set({ tafsir, group });
   }
@@ -350,8 +361,6 @@ export class TafsirsManagerComponent implements OnInit {
       this.deleting.set(false);
     }
   }
-
-  // ==================== مساعدات ====================
 
   getLangName(code: string): string {
     const map: any = { ar: 'عربي', it: 'إيطالي', en: 'إنجليزي' };
