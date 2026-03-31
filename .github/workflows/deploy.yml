@@ -34,3 +34,6 @@ jobs:
           local-dir: dist/quran-it/browser/
           server-dir: ./
           dangerous-clean-slate: true
+          # أضف السطرين التاليين:
+          protocol: ftps
+          security: loose
