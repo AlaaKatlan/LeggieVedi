@@ -312,7 +312,7 @@ export class PublicationsManagerComponent implements OnInit {
     this.isUploading.set(true);
     try {
       // نستخدم نفس دالة الرفع الموجودة في السيرفس
-      const url = await this.adminService.uploadImage(file, 'publications'); // تأكد من وجود bucket باسم publications أو استخدم images
+      const url = await this.adminService.uploadImage(file, 'Publications'); // تأكد من وجود bucket باسم publications أو استخدم images
       this.form.patchValue({ cover_image_url: url });
     } catch (error) {
       console.error('Upload failed:', error);
