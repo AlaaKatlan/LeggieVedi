@@ -15,7 +15,10 @@ export class SupabaseService {
     // تأكد من أن ملف البيئة يحتوي على مفاتيح Supabase الخاصة بك
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
   }
-
+  // أضفنا هذه الدالة لتوفير وصول آمن للـ client من الخدمات الأخرى
+  public getClient(): SupabaseClient {
+    return this.supabase;
+  }
   /**
    * جلب قائمة بكل السور
    */
@@ -137,10 +140,10 @@ export class SupabaseService {
   /**
  * جلب جميع الفيديوهات مع معلومات الفئات
  */
-async getAllVideos(): Promise<any[]> {
-  const { data, error } = await this.supabase
-    .from('videos')
-    .select(`
+  async getAllVideos(): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('videos')
+      .select(`
       *,
       videos_categories (
         id,
@@ -148,30 +151,30 @@ async getAllVideos(): Promise<any[]> {
         categories_en
       )
     `)
-    .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching videos:', error);
-    throw new Error(error.message);
+    if (error) {
+      console.error('Error fetching videos:', error);
+      throw new Error(error.message);
+    }
+    return data || [];
   }
-  return data || [];
-}
 
-/**
- * جلب جميع فئات الفيديوهات
- */
-async getVideoCategories(): Promise<any[]> {
-  const { data, error } = await this.supabase
-    .from('videos_categories')
-    .select('*')
-    .order('id', { ascending: true });
+  /**
+   * جلب جميع فئات الفيديوهات
+   */
+  async getVideoCategories(): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('videos_categories')
+      .select('*')
+      .order('id', { ascending: true });
 
-  if (error) {
-    console.error('Error fetching video categories:', error);
-    throw new Error(error.message);
+    if (error) {
+      console.error('Error fetching video categories:', error);
+      throw new Error(error.message);
+    }
+    return data || [];
   }
-  return data || [];
-}
 
 
 

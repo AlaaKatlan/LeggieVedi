@@ -305,14 +305,15 @@ export class PublicationsManagerComponent implements OnInit {
   }
 
   // --- Image Upload ---
+  // --- Image Upload ---
   async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
 
     this.isUploading.set(true);
     try {
-      // نستخدم نفس دالة الرفع الموجودة في السيرفس
-      const url = await this.adminService.uploadImage(file, 'publications'); // تأكد من وجود bucket باسم publications أو استخدم images
+      // تم التعديل هنا: استخدام حرف P كبير ليطابق اسم الـ Bucket في Supabase
+      const url = await this.adminService.uploadImage(file, 'Publications');
       this.form.patchValue({ cover_image_url: url });
     } catch (error) {
       console.error('Upload failed:', error);
