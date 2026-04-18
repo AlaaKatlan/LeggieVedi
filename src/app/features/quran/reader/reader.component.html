@@ -108,9 +108,56 @@
  -->
 @if (surahInfo(); as surah) {
 <div class="reader-header justify-items-center">
-  <h1 class="surah-title-ar justify-items-center">{{ surah.name_ar }}</h1>
-  <h2 class="surah-title-en">{{ surah.name_it }} - {{ surah.name_en_translation }}</h2>
-  <h2 class="surah-title-en">{{ surah.name_en }}</h2>
+
+  <h1 class="surah-title-ar justify-items-center">
+    @for (segment of processTextWithFootnotes(surah.name_ar, surah.name_footnotes || []); track $index) {
+      @if (isFootnote(segment)) {
+        <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">
+          <i class="fas fa-info-circle text-sm" style="color: #01579b; vertical-align: super;"></i>
+        </button>
+      } @else {
+        <span>{{ segment }}</span>
+      }
+    }
+  </h1>
+
+  <h2 class="surah-title-en">
+    @for (segment of processTextWithFootnotes(surah.name_it, surah.name_footnotes || []); track $index) {
+      @if (isFootnote(segment)) {
+        <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">
+          <i class="fas fa-info-circle text-sm" style="color: #01579b; vertical-align: super;"></i>
+        </button>
+      } @else {
+        <span>{{ segment }}</span>
+      }
+    }
+
+    @if (surah.name_en_translation) {
+      -
+      @for (segment of processTextWithFootnotes(surah.name_en_translation, surah.name_footnotes || []); track $index) {
+        @if (isFootnote(segment)) {
+          <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">
+            <i class="fas fa-info-circle text-sm" style="color: #01579b; vertical-align: super;"></i>
+          </button>
+        } @else {
+          <span>{{ segment }}</span>
+        }
+      }
+    }
+  </h2>
+
+  <h2 class="surah-title-en">
+    @for (segment of processTextWithFootnotes(surah.name_en, surah.name_footnotes || []); track $index) {
+      @if (isFootnote(segment)) {
+        <button class="footnote-btn" (click)="showFootnote(segment.note, $event)">
+          <i class="fas fa-info-circle text-sm" style="vertical-align: super;"></i>
+        </button>
+      } @else {
+        <span>{{ segment }}</span>
+      }
+    }
+  </h2>
+
   <div class="surah-details justify-items-center">
     <span class="separator">•</span>
     <span>{{ surah.ayah_count }} Verses</span>
@@ -133,29 +180,29 @@
 
 <!-- نتائج البحث الشاملة -->
 @if (searchResults().length > 0) {
-  <div class="search-results-container">
-    <div class="search-results-header">
-      <h3>نتائج البحث: {{ searchResults().length }} نتيجة</h3>
-      <button class="clear-search-btn" (click)="clearSearch()">
-        <i class="fas fa-times"></i> مسح البحث
-      </button>
-    </div>
-
-    <div class="search-results-list">
-      @for (result of searchResults(); track result.ayah.ayah_id) {
-        <div class="search-result-item" (click)="navigateToAyah(result.surah.id, result.ayah.verse_number)">
-          <div class="result-header">
-            <span class="surah-name">{{ result.surah.name_ar }} - {{ result.surah.name_it }}</span>
-            <span class="ayah-number">{{ result.surah.order_number }}:{{ result.ayah.verse_number }}</span>
-          </div>
-          <p class="result-text">{{ result.ayah.text_uthmani }}</p>
-          <p class="result-translation">
-            {{ result.ayah.primary_tafsir?.text?.substring(0, 150) || '' }}...
-          </p>
-        </div>
-      }
-    </div>
+<div class="search-results-container">
+  <div class="search-results-header">
+    <h3>نتائج البحث: {{ searchResults().length }} نتيجة</h3>
+    <button class="clear-search-btn" (click)="clearSearch()">
+      <i class="fas fa-times"></i> مسح البحث
+    </button>
   </div>
+
+  <div class="search-results-list">
+    @for (result of searchResults(); track result.ayah.ayah_id) {
+    <div class="search-result-item" (click)="navigateToAyah(result.surah.id, result.ayah.verse_number)">
+      <div class="result-header">
+        <span class="surah-name">{{ result.surah.name_ar }} - {{ result.surah.name_it }}</span>
+        <span class="ayah-number">{{ result.surah.order_number }}:{{ result.ayah.verse_number }}</span>
+      </div>
+      <p class="result-text">{{ result.ayah.text_uthmani }}</p>
+      <p class="result-translation">
+        {{ result.ayah.primary_tafsir?.text?.substring(0, 150) || '' }}...
+      </p>
+    </div>
+    }
+  </div>
+</div>
 } @else if (filteredAyahs().length > 0) {
 <div class="reader-container">
   @for (ayah of filteredAyahs(); track ayah.ayah_id) {

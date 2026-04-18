@@ -8,8 +8,7 @@ import { Footnote } from '../../../core/models/footnote.model';
 import { Surah } from '../../../core/models/surah.model';
 import { QuranBookmarkService } from '../../../core/services/quran-bookmark.service';
 
-type TextSegment = string | Footnote;
-
+type TextSegment = string | any;
 @Component({
   selector: 'app-reader',
   standalone: true,
@@ -18,6 +17,7 @@ type TextSegment = string | Footnote;
   styleUrls: ['./reader.component.scss'],
 })
 export class ReaderComponent implements OnInit, OnDestroy {
+
   // ============================================
   // SIGNALS (الحالات)
   // ============================================
@@ -296,9 +296,13 @@ export class ReaderComponent implements OnInit, OnDestroy {
   /**
    * معالجة النص مع الحواشي
    */
-  processTextWithFootnotes(text: string, notes: Footnote[]): TextSegment[] {
+  /**
+   * معالجة النص مع الحواشي (تدعم حواشي الآيات وحواشي السور)
+   */
+  processTextWithFootnotes(text: string | undefined, notes: any[]): any[] {
+    // حماية إضافية في حال كان النص فارغاً (مثل ترجمة السورة إن لم توجد)
     if (!text || !notes || notes.length === 0) {
-      return [text];
+      return [text || ''];
     }
 
     try {
@@ -311,7 +315,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       // ترتيب الحواشي حسب موقعها في النص
       const sortedNotes = validNotes.sort((a, b) => text.indexOf(a.ref!) - text.indexOf(b.ref!));
 
-      const segments: TextSegment[] = [];
+      const segments: any[] = [];
       let lastIndex = 0;
 
       sortedNotes.forEach(note => {
@@ -332,16 +336,22 @@ export class ReaderComponent implements OnInit, OnDestroy {
       return segments;
     } catch (error) {
       console.error('Error processing text with footnotes:', error);
-      return [text];
+      return [text || ''];
     }
   }
 
   /**
    * التحقق من أن العنصر حاشية
    */
-  isFootnote(segment: TextSegment): segment is Footnote {
+  isFootnote(segment: any): boolean {
     return typeof segment === 'object' && segment !== null && 'note' in segment;
   }
+  /**
+   * التحقق من أن العنصر حاشية
+   */
+  // isFootnote(segment: TextSegment): segment is Footnote {
+  //   return typeof segment === 'object' && segment !== null && 'note' in segment;
+  // }
 
   /**
    * عرض نافذة الحاشية
