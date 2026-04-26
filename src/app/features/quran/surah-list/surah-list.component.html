@@ -9,27 +9,27 @@
       class="word-btn"
       [class.active]="currentViewType() === 'dedica'">
       <i class="fas fa-file-word"></i>
-      <span>Dedica</span>
+      <span>Dedica - إهداء</span>
     </button>
 
-    <!-- Introduzione Button -->
+    <!-- Presentazione  Button -->
     <button
       (click)="openIntroduzione()"
       class="word-btn"
-      [class.active]="currentViewType() === 'introduzione'">
+      [class.active]="currentViewType() === 'Presentazione'">
       <i class="fas fa-file-word"></i>
-      <span>Introduzione</span>
+      <span>presentazione - تقديم</span>
     </button>
   </div>
 
   <!-- List Header -->
   <div class="list-header">
     <div class="filter-group">
-      <label>Scegli la Sura:</label>
+      <label>Scegli la Sura - اخنيار الآية:</label>
       <select
         [ngModel]="selectedSurahId()"
         (ngModelChange)="onSurahChange($event)">
-        <option [ngValue]="null">Tutti i muri</option>
+        <!-- <option [ngValue]="null">Tutti i muri</option> -->
         <option *ngFor="let surah of filteredSurahs()" [ngValue]="surah.id">
           {{ surah.name_ar }} - {{ surah.name_en }}
         </option>
@@ -37,7 +37,7 @@
     </div>
 
     <div class="filter-group">
-      <label>Scegli il versetto:</label>
+      <label>Scegli il versetto - اختيار السورة:</label>
       <select
         [ngModel]="selectedAyah()"
         (ngModelChange)="onAyahChange($event)">

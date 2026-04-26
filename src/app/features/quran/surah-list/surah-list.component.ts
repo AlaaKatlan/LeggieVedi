@@ -33,7 +33,7 @@ export class SurahListComponent implements OnInit {
   selectedSurahId = signal<number | null>(null);
   selectedAyah = signal<number | null>(null);
 
-  currentViewType = signal<'surah' | 'dedica' | 'introduzione' | null>(null);
+  currentViewType = signal<'surah' | 'dedica' | 'Presentazione' | null>(null);
 
 
 
@@ -70,7 +70,7 @@ export class SurahListComponent implements OnInit {
         const surahId = parseInt(surahMatch[1], 10);
 
         // لا تقم بتغيير الحالة إذا كان المستخدم قد اختار ملف وورد
-        if (this.currentViewType() !== 'dedica' && this.currentViewType() !== 'introduzione') {
+        if (this.currentViewType() !== 'dedica' && this.currentViewType() !== 'Presentazione') {
             this.currentViewType.set('surah');
         }
         // تحديث السورة المختارة من الرابط
@@ -153,7 +153,7 @@ export class SurahListComponent implements OnInit {
   openIntroduzione() {
     this.selectedSurahId.set(null);
     this.selectedAyah.set(null);
-    this.currentViewType.set('introduzione');
-    this.openWord.emit('Introduzione');
+    this.currentViewType.set('Presentazione');
+    this.openWord.emit('Presentazione');
   }
 }

@@ -1097,3 +1097,20 @@ mark {
     }
   }
 }
+.basmalah-card {
+  text-align: center;
+  max-width: 900px;        // ← نفس عرض .reader-container
+  margin: 8px auto 16px;
+  padding: 16px 24px;
+
+  .arabic-text {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+  }
+
+  .primary-tafsir,
+  .extra-tafsirs {
+    text-align: start;
+    font-size: 0.9rem;
+  }
+}
